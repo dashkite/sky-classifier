@@ -1,6 +1,6 @@
-# Graphite
+# Sky Classifier
 
-_Graph Database For DynamoDB_
+_Request classifier for Sky APIs_
 
 ## API
 

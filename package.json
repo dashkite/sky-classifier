@@ -1,7 +1,7 @@
 {
-  "name": "@dashkite/graphite",
+  "name": "@dashkite/sky-classifier",
   "version": "0.0.0",
-  "description": "Graph Database For DynamoDB",
+  "description": "Request classifier for Sky APIs",
   "exports": {
     ".": {
       "node": "./build/node/src/index.js"
@@ -35,9 +35,14 @@
   },
   "homepage": "https://github.com/dashkite/dolores#readme",
   "devDependencies": {
+    "@dashkite/amen": "^0.1.2",
+    "@dashkite/amen-console": "^0.0.1",
+    "@dashkite/assert": "^0.1.4",
     "@dashkite/genie": "^0.5.4",
     "@dashkite/genie-presets": "^0.5.2"
   },
   "dependencies": {
+    "@dashkite/joy": "^0.3.16",
+    "@pandastrike/router": "^3.1.0"
   }
 }
