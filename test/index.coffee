@@ -23,7 +23,7 @@ do ->
       classify = $ api
       assert.deepEqual { resource: "foo", method: "post" },
         classify
-          url: "/foo"
+          target: "/foo"
           method: "post"
           headers: {}
 

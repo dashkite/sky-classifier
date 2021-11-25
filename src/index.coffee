@@ -19,7 +19,10 @@ matchMediaType = ( actual, expected ) -> true
 classify = ( description ) ->
   router = buildRouter description
   ( request ) ->
-    if (match = router.match request.url)?
+    console.log "start classifier"
+    console.log { request }
+    if (match = router.match request.target)?
+      console.log { match }
       { resource, name } = match.data
       if ({ signatures } = resource.methods[ request.method ])?
         acceptable = do ->
