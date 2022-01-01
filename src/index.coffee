@@ -24,7 +24,8 @@ classify = ( description ) ->
     if (match = router.match request.target)?
       console.log { match }
       { resource, name } = match.data
-      if ({ signatures } = resource.methods[ request.method ])?
+      if (method = resource.methods[ request.method ])?
+        { signatures } = method
         acceptable = do ->
           if signatures.response[ "content-type" ]?
             matchAccept request.headers.accept,
@@ -41,6 +42,7 @@ classify = ( description ) ->
           if supported
             resource: name
             method: request.method
+            bindings: match.bindings
           else
             "unsupported media type"
         else
