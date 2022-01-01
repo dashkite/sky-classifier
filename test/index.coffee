@@ -21,11 +21,12 @@ do ->
 
     test "create a classifier from a description", ->
       classify = $ api
-      assert.deepEqual { resource: "foo", method: "post" },
+      assert.deepEqual { resource: "foo", method: "post", bindings: {} },
         classify
           target: "/foo"
           method: "post"
           headers: {}
+
 
     
   ]
