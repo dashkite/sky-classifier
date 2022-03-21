@@ -43,6 +43,7 @@ classify = ( description ) ->
             resource: name
             method: request.method
             bindings: match.bindings
+            signatures: signatures
           else
             "unsupported media type"
         else
