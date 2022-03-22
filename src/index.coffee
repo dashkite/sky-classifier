@@ -40,10 +40,16 @@ classify = ( description ) ->
             else
               true
           if supported
+            if ( header = request.headers["content-type"]?[0] )?
+              isJSON = /[/+]json$/.test header
+            else
+              isJSON = false
+
             resource: name
             method: request.method
             bindings: match.bindings
             signatures: signatures
+            json: ( JSON.parse request.content ) if isJSON
           else
             "unsupported media type"
         else
