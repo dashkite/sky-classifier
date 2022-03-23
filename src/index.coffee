@@ -21,7 +21,6 @@ classify = ( description ) ->
   ( request ) ->
     console.log "start classifier"
     console.log { request }
-    target = request.target.replace(/\/$/, "")
     if (match = router.match request.target)?
       console.log { match }
       { resource, name } = match.data
