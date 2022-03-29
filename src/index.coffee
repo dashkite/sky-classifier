@@ -1,5 +1,6 @@
 import * as Fn from "@dashkite/joy/function"
 import { Router } from "@pandastrike/router"
+import { getRequestJSON } from "@dashkite/maeve/normalized"
 
 buildRouter = ( description ) ->
   router = Router.create()
@@ -40,16 +41,11 @@ classify = ( description ) ->
             else
               true
           if supported
-            if ( header = request.headers["content-type"]?[0] )?
-              isJSON = /[/+]json$/.test header
-            else
-              isJSON = false
-
             resource: name
             method: request.method
             bindings: match.bindings
             signatures: signatures
-            json: ( JSON.parse request.content ) if isJSON
+            json: getRequestJSON request
           else
             "unsupported media type"
         else

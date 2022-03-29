@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@dashkite/joy": "^0.3.16",
+    "@dashkite/maeve": "file:../maeve",
     "@pandastrike/router": "^3.1.0"
   }
 }
