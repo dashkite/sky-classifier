@@ -1,5 +1,5 @@
 import * as Fn from "@dashkite/joy/function"
-import { Router } from "@pandastrike/router"
+import { Router } from "@dashkite/uri-router"
 
 buildRouter = ( description ) ->
   router = Router.create()

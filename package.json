@@ -43,6 +43,6 @@
   },
   "dependencies": {
     "@dashkite/joy": "^0.3.16",
-    "@pandastrike/router": "^3.1.0"
+    "@pandastrike/router": "file:../uri-router"
   }
 }
