@@ -43,7 +43,11 @@ classify = ( description ) ->
           if supported
             resource: name
             method: request.method
-            bindings: match.bindings
+            bindings: do ->
+              results = {}
+              for key, value of match.bindings
+                results[ key ] = decodeURIComponent value
+              results
             signatures: signatures
             json: getRequestJSON request
           else
