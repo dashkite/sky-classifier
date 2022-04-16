@@ -14,6 +14,12 @@ matchAccept = ( actual, expected ) -> true
 
 matchMediaType = ( actual, expected ) -> true
 
+decodeBindings = (match) ->
+  results = {}
+  for key, value of match.bindings
+    results[ key ] = decodeURIComponent value
+  match.bindings = results
+
 # IMPORTANT options and head methods should be handled outside the classifier
 # since these are basically variants of the other methods
 
@@ -23,6 +29,7 @@ classify = ( description ) ->
     console.log "start classifier"
     console.log { request }
     if (match = router.match request.target)?
+      decodeBindings match
       console.log { match }
       { resource, name } = match.data
       if (method = resource.methods[ request.method ])?
@@ -43,11 +50,7 @@ classify = ( description ) ->
           if supported
             resource: name
             method: request.method
-            bindings: do ->
-              results = {}
-              for key, value of match.bindings
-                results[ key ] = decodeURIComponent value
-              results
+            bindings: match.bindings
             signatures: signatures
             json: getRequestJSON request
           else
