@@ -52,7 +52,7 @@ classify = ( description ) ->
             method: request.method
             bindings: match.bindings
             signatures: signatures
-            json: getRequestJSON request
+            json: ( getRequestJSON request ) ? {}
           else
             "unsupported media type"
         else
