@@ -1,58 +1,108 @@
 import * as Fn from "@dashkite/joy/function"
-import { Router } from "@pandastrike/router"
-import { getRequestJSON } from "@dashkite/maeve/normalized"
+import * as API from "@dashkite/sky-api-description"
+import * as Sublime from "@dashkite/maeve/sublime"
 
-buildRouter = ( description ) ->
-  router = Router.create()
-  for name, resource of description.resources
-    router.add
-      template: resource.template
-      data: { name, resource }
-  router
+describe = Fn.tee ( context ) ->
+  if request.target == "/"
+    context.response =
+      description: "ok"
+      content: context.api 
+  else
+    context.api = API.Description.make description
 
-matchAccept = ( actual, expected ) -> true
+resource = Fn.tee ( context ) ->
+  { request } = context
+  if ( resource = description.decode request.target )?
+    request.resource = resource
+  else
+    context.response = description: "not found"
 
-matchMediaType = ( actual, expected ) -> true
+options = Fn.tee ( context ) ->
+  if request.method == "options"
+    context.response =
+      description: "no content"
+      headers:
+        allow: [ description.options ]
 
-# IMPORTANT options and head methods should be handled outside the classifier
-# since these are basically variants of the other methods
+head = ( context ) ->
+  { request } = context
+  context.head = if request.method == "head"
+    request.method = "get"
+    true
+  else false
 
-classify = ( description ) ->
-  router = buildRouter description
-  ( request ) ->
-    console.log "start classifier"
-    console.log { request }
-    if (match = router.match request.target)?
-      console.log { match }
-      { resource, name } = match.data
-      if (method = resource.methods[ request.method ])?
-        { signatures } = method
-        acceptable = do ->
-          if signatures.response[ "content-type" ]?
-            matchAccept request.headers.accept,
-              signatures.response[ "content-type" ]
-          else
-            true
-        if acceptable
-          supported = do ->
-            if signatures.request["content-type"]?
-              matchMediaType request.headers[ "content-type" ], 
-                signatures.request["content-type"]
-            else
-              true
-          if supported
-            resource: name
-            method: request.method
-            bindings: match.bindings
-            signatures: signatures
-            json: getRequestJSON request
-          else
-            "unsupported media type"
-        else
-          "not acceptable"
-      else
-        "method not allowed"
-    else
-      "not found"
+method = ( context ) ->
+  { request } = context
+  { resource } = request
+  if ( method = description.getMethod resource.name, request.method )?
+    context.method = method
+  else
+    context.response =
+      description: "method not allowed"
+
+acceptable = ( context ) ->
+  { request, method } = context
+  if ( accepts = method.accept request )?
+    context.accepts = accepts
+  else
+    context.response =
+      description: "not acceptable"
+
+supported = ( context ) ->
+  { request, method } = context
+  if ( content = method.content request )?
+    context.content = content
+  else
+    context.response =
+      description: "unsupported media type"
+
+lambda = ( context ) ->
+  { request, domains } = context
+  if ( lambda = domains[ request.domain ] )?
+    context.lambda = lambda
+  else
+    console.warn "sky-classifier: no matching lambda for 
+      domain [ #{ request.domain } ]"
+    context.response =
+      description: "internal server error"
+
+accept = ( response ) ->
+  # TODO convert response
+  response
+
+invoke = ( context ) ->
+  { accepts, handler, request, content, lambda } = context
+  context.response = accept accepts,
+    await handler {
+      request...
+      resource
+      content
+      lambda
+    }
+  if context.head
+    # let Sublime take care of the rest
+    context.response.description = "no content"
+
+normalize = ( handler ) ->
+  ( request ) -> 
+    Sublime.Response.normalize await handler request
+
+run = Fn.curry ( processors, context ) ->
+  for processor in processors
+    context = await processor context
+    break if context.response?
+  context.response
+
+classifier = normalize run [
+  describe
+  resource
+  options
+  head
+  method
+  acceptable
+  supported
+  lambda
+  invoke
+]
 
 export default classify

@@ -1,0 +1,50 @@
+- name: description
+  request:
+    target: /
+    method: get
+  response:
+    status: 200
+    content:
+      type: application/json
+      
+- name: simple request
+  request:
+    target: /foo
+    method: post
+  response:
+    status: 200
+    content:
+      body: success!
+      type: text/plain
+
+- name: not found
+  request:
+    target: /foobar
+    method: post
+  response:
+    status: 404
+
+- name: method not allowed
+  request:
+    target: /foo
+    method: get
+  response:
+    status: 405
+
+- name: no content
+  request:
+    target: /foo
+    method: delete
+  response:
+    status: 204
+
+- name: json response
+  request:
+    target: /bar
+    method: get
+  response:
+    status: 200
+    content:
+      body:
+        greeting: hello, world!
+      type: application/json

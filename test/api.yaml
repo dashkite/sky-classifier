@@ -1,0 +1,27 @@
+resources:
+  foo:
+    template: /foo
+    methods:
+      post:
+        signatures:
+          request: {}
+          response:
+            status: [ 200 ]
+            "content-type":
+              - text/plain
+      delete:
+        signatures:
+          request: {}
+          response:
+            status: [ 204 ]
+
+  bar:
+    template: /bar
+    methods:
+      get:
+        signatures:
+          request: {}
+          response:
+            status: [ 200 ]
+            "content-type":
+              - application/json
