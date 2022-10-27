@@ -1,51 +1,32 @@
 import { test, success } from "@dashkite/amen"
 import print from "@dashkite/amen-console"
-import assert from "@dashkite/assert"
 
-import * as Type from "@dashkite/joy/type"
+import dispatcher from "@dashkite/sky-dispatcher"
 
-import $ from "../src"
+# MUT
+import classifier from "../src"
 
 import scenarios from "./scenarios"
 import api from "./api"
+import handlers from "./handlers"
+import runner from "./runner"
 
-handlers =
-  foo:
-    post: -> 
-      description: "ok"
-      content: "success!"
-    delete: ->
-  bar:
-    get: ->
-      content: greeting: "hello, world!"
+lambdas = "acme.io": "acme-api-lambda"
 
-dispatch = $ api, handlers
+# mock fetch that just runs locally
+globalThis.Sky =
+  fetch: dispatcher { description: api, handlers }
 
-run = ( scenario ) -> ->
-  response = await dispatch scenario.request
-  assert.equal scenario.response.status, response.status
-  if scenario.response.content?
-    if scenario.response.content.body?
-      if Type.isObject response.content
-        assert.deepEqual scenario.response.content.body,
-          response.content
-      else
-        assert.equal scenario.response.content.body,
-          response.content
-    if response.content.length?
-      assert.equal response.content.length,
-        response.headers[ "content-length" ]
-    assert.equal scenario.response.content.type,
-      response.headers[ "content-type" ][0]
-  else
-    assert !response.content?
-    assert !response.headers[ "content-length" ]?
-    assert !response.headers[ "content-type" ]?
-  
+# we would usually pass in another handler,
+# but for test purposes we just skip ahead
+# to our mock fetch
+run = runner classifier lambdas, Sky.fetch
+
 do ->
 
   print await test "Sky Dispatcher", do ->
     for scenario in scenarios
+      scenario.request.domain = "acme.io"
       test scenario.name, run scenario
 
   process.exit success

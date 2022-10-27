@@ -9,3 +9,9 @@ presets:
         - preset: node
           glob:
             - '{src,test}/**/*.coffee'
+  yaml:
+    targets:
+      node:
+        - preset: js
+          glob:
+            - "{src,test}/**/*.yaml"

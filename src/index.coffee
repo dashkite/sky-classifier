@@ -3,62 +3,68 @@ import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 
 describe = Fn.tee ( context ) ->
+  { request } = context
+  api = await API.Description.discover request
   if request.target == "/"
     context.response =
       description: "ok"
-      content: context.api 
+      content: api.data 
   else
-    context.api = API.Description.make description
+    context.api = api
 
 resource = Fn.tee ( context ) ->
-  { request } = context
-  if ( resource = description.decode request.target )?
+  { request, api } = context
+  if ( resource = api.decode request )?
     request.resource = resource
+    context.resource = api.resources[ resource.name ]
   else
     context.response = description: "not found"
 
 options = Fn.tee ( context ) ->
+  { request, resource } = context
   if request.method == "options"
     context.response =
       description: "no content"
       headers:
-        allow: [ description.options ]
+        allow: [ resource.options ]
 
-head = ( context ) ->
+head = Fn.tee ( context ) ->
   { request } = context
   context.head = if request.method == "head"
     request.method = "get"
     true
   else false
 
-method = ( context ) ->
-  { request } = context
-  { resource } = request
-  if ( method = description.getMethod resource.name, request.method )?
+method = Fn.tee ( context ) ->
+  { request, resource } = context
+  if ( method = resource.methods[ request.method ])?
     context.method = method
   else
     context.response =
       description: "method not allowed"
 
-acceptable = ( context ) ->
-  { request, method } = context
-  if ( accepts = method.accept request )?
-    context.accepts = accepts
-  else
-    context.response =
-      description: "not acceptable"
+acceptable = Fn.tee ( context ) ->
+  # TODO handle response content negotiation here
+  # { request, method } = context
+  # if ( accepts = method.accept request )?
+  #   context.accepts = accepts
+  # else
+  #   context.response =
+  #     description: "not acceptable"
 
-supported = ( context ) ->
-  { request, method } = context
-  if ( content = method.content request )?
-    context.content = content
-  else
-    context.response =
-      description: "unsupported media type"
+supported = Fn.tee ( context ) ->
+  # TODO handle request content negotiation here
+  # { request, method } = context
+  # if ( content = method.content request )?
+  #   context.content = content
+  # else
+  #   context.response =
+  #     description: "unsupported media type"
+  context.content = context.request.content
 
-lambda = ( context ) ->
-  { request, domains } = context
-  if ( lambda = domains[ request.domain ] )?
+lambda = Fn.curry Fn.rtee ( lambdas, context ) ->
+  { request } = context
+  if ( lambda = lambdas[ request.domain ] )?
     context.lambda = lambda
   else
     console.warn "sky-classifier: no matching lambda for 
@@ -66,16 +72,15 @@ lambda = ( context ) ->
     context.response =
       description: "internal server error"
 
-accept = ( response ) ->
-  # TODO convert response
+accept = ( accepts, response ) ->
+  # TODO convert response based on acceptable context property
   response
 
-invoke = ( context ) ->
-  { accepts, handler, request, content, lambda } = context
+invoke = Fn.curry Fn.rtee ( handler, context ) ->
+  { accepts, request, content, lambda } = context
   context.response = accept accepts,
     await handler {
       request...
-      resource
       content
       lambda
     }
@@ -84,8 +89,7 @@ invoke = ( context ) ->
     context.response.description = "no content"
 
 normalize = ( handler ) ->
-  ( request ) -> 
-    Sublime.Response.normalize await handler request
+  ( request ) -> Sublime.response await handler request
 
 run = Fn.curry ( processors, context ) ->
   for processor in processors
@@ -93,16 +97,18 @@ run = Fn.curry ( processors, context ) ->
     break if context.response?
   context.response
 
-classifier = normalize run [
-  describe
-  resource
-  options
-  head
-  method
-  acceptable
-  supported
-  lambda
-  invoke
-]
+classifier = ( lambdas, handler ) ->
+  process = run [
+    describe
+    resource
+    options
+    head
+    method
+    acceptable
+    supported
+    lambda lambdas
+    invoke handler
+  ]
+  normalize ( request ) -> process { request }
 
-export default classify
+export default classifier
