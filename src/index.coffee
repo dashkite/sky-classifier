@@ -1,4 +1,5 @@
 import * as Fn from "@dashkite/joy/function"
+import * as Text from "@dashkite/joy/text"
 import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 
@@ -76,6 +77,20 @@ accept = ( accepts, response ) ->
   # TODO convert response based on acceptable context property
   response
 
+authorization = Fn.tee ( context ) ->
+  { request } = context
+  context.authorization = do ->
+    if ( header = Sublime.Request.Headers.get request, "authorization" )?
+      [ credential, parameters... ] = Text.split ",", Text.trim header
+      [ scheme, credential ] = Text.split /\s+/, credential
+      parameters = parameters
+        .map (parameter) -> Text.split "=", parameter
+        .map ([ key, value ]) -> 
+          [ Text.trim key ]: Text.trim value
+        .reduce (( result, value ) -> Object.assign result, value ), {}
+      { scheme, credential, parameters }
+    else {}
+
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
   { accepts, request, content, lambda } = context
   context.response = accept accepts,
@@ -107,6 +122,7 @@ classifier = ( lambdas, handler ) ->
     acceptable
     supported
     lambda lambdas
+    authorization
     invoke handler
   ]
   normalize ( request ) -> process { request }

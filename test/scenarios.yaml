@@ -48,3 +48,17 @@
       body:
         greeting: hello, world!
       type: application/json
+
+- name: authorized request
+  request:
+    target: /bar
+    method: get
+    headers:
+      authorization: 
+        - fubar 12345,baz=abc
+  response:
+    status: 200
+    content:
+      body:
+        greeting: hello, world!
+      type: application/json
