@@ -5,13 +5,16 @@ import * as Sublime from "@dashkite/maeve/sublime"
 
 describe = Fn.tee ( context ) ->
   { request } = context
-  api = await API.Description.discover request
-  if request.target == "/"
-    context.response =
-      description: "ok"
-      content: api.data 
+  if ( api = await API.Description.discover request )?
+    if request.target == "/"
+      context.response =
+        description: "ok"
+        content: api.data 
+    else
+      context.api = api
   else
-    context.api = api
+    context.response =
+      description: "not found"
 
 resource = Fn.tee ( context ) ->
   { request, api } = context
@@ -45,33 +48,29 @@ method = Fn.tee ( context ) ->
       description: "method not allowed"
 
 acceptable = Fn.tee ( context ) ->
-  # TODO handle response content negotiation here
   # { request, method } = context
-  # if ( accepts = method.accept request )?
-  #   context.accepts = accepts
+  # if ( accept = method.accept request )?
+  #   context.accept = accept
   # else
   #   context.response =
   #     description: "not acceptable"
 
 supported = Fn.tee ( context ) ->
-  # TODO handle request content negotiation here
-  # { request, method } = context
-  # if ( content = method.content request )?
-  #   context.content = content
-  # else
-  #   context.response =
-  #     description: "unsupported media type"
-  context.content = context.request.content
-
-lambda = Fn.curry Fn.rtee ( lambdas, context ) ->
-  { request } = context
-  if ( lambda = lambdas[ request.domain ] )?
-    context.lambda = lambda
-  else
-    console.warn "sky-classifier: no matching lambda for 
-      domain [ #{ request.domain } ]"
+  { request, method } = context
+  if request.content?
+    if method.contentSupported request
+      if ( content = method.contentFrom request )?
+        request.raw = content: request.content
+        request.content = content
+      else
+        context.response =
+          description: "bad request"
+    else
+      context.response =
+        description: "unsupported media type"
+  else if method.request[ "content-type" ]?
     context.response =
-      description: "internal server error"
+      description: "bad request"
 
 accept = ( accepts, response ) ->
   # TODO convert response based on acceptable context property
@@ -79,7 +78,7 @@ accept = ( accepts, response ) ->
 
 authorization = Fn.tee ( context ) ->
   { request } = context
-  context.authorization = do ->
+  context.request.authorization = do ->
     if ( header = Sublime.Request.Headers.get request, "authorization" )?
       [ credential, parameters... ] = Text.split ",", Text.trim header
       [ scheme, credential ] = Text.split /\s+/, credential
@@ -92,13 +91,9 @@ authorization = Fn.tee ( context ) ->
     else {}
 
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
-  { accepts, request, content, lambda } = context
+  { accepts, request } = context
   context.response = accept accepts,
-    await handler {
-      request...
-      content
-      lambda
-    }
+    await handler request
   if context.head
     # let Sublime take care of the rest
     context.response.description = "no content"
@@ -112,7 +107,7 @@ run = Fn.curry ( processors, context ) ->
     break if context.response?
   context.response
 
-classifier = ( lambdas, handler ) ->
+classifier = ( handler ) ->
   process = run [
     describe
     resource
@@ -121,10 +116,9 @@ classifier = ( lambdas, handler ) ->
     method
     acceptable
     supported
-    lambda lambdas
     authorization
     invoke handler
   ]
   normalize ( request ) -> process { request }
 
-export default classifier
+export { classifier }

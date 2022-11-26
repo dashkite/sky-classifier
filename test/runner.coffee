@@ -6,6 +6,7 @@ runner = ( dispatch ) ->
     { request, response: { status, content }} = scenario
     ->
       response = await dispatch request
+      # console.log scenario.name, response
       assert.equal status, response.status
       if content?
         if content.body?
@@ -14,10 +15,10 @@ runner = ( dispatch ) ->
         #   assert.equal response.content.length,
         #     response.headers[ "content-length" ]
         assert.equal content.type,
-          response.headers[ "content-type" ][0]
+          response.headers?[ "content-type" ]?[0]
       else
         assert !response.content?
-        assert !response.headers[ "content-length" ]?
-        assert !response.headers[ "content-type" ]?
+        assert !response.headers?[ "content-length" ]?
+        assert !response.headers?[ "content-type" ]?
   
 export default runner

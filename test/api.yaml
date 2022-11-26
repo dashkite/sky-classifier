@@ -3,25 +3,24 @@ resources:
     template: /foo
     methods:
       post:
-        signatures:
-          request: {}
-          response:
-            status: [ 200 ]
-            "content-type":
-              - text/plain
+        request:
+          content-type:
+            - application/json
+        response:
+          status: [ 200 ]
+          content-type:
+            - text/plain
       delete:
-        signatures:
-          request: {}
-          response:
-            status: [ 204 ]
+        request: {}
+        response:
+          status: [ 204 ]
 
   bar:
     template: /bar
     methods:
       get:
-        signatures:
-          request: {}
-          response:
-            status: [ 200 ]
-            "content-type":
-              - application/json
+        request: {}
+        response:
+          status: [ 200 ]
+          content-type:
+            - application/json

@@ -4,7 +4,7 @@ import print from "@dashkite/amen-console"
 import dispatcher from "@dashkite/sky-dispatcher"
 
 # MUT
-import classifier from "../src"
+import { classifier } from "../src"
 
 import scenarios from "./scenarios"
 import api from "./api"
@@ -20,7 +20,7 @@ globalThis.Sky =
 # we would usually pass in another handler,
 # but for test purposes we just skip ahead
 # to our mock fetch
-run = runner classifier lambdas, Sky.fetch
+run = runner classifier Sky.fetch
 
 do ->
 
