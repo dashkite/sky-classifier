@@ -87,6 +87,7 @@ authorization = Fn.tee ( context ) ->
         .map ([ key, value ]) -> 
           [ Text.trim key ]: Text.trim value
         .reduce (( result, value ) -> Object.assign result, value ), {}
+      console.log "sky-classifier", { scheme, credential }
       { scheme, credential, parameters }
     else {}
 
