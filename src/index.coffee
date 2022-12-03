@@ -18,7 +18,9 @@ describe = Fn.tee ( context ) ->
 
 resource = Fn.tee ( context ) ->
   { request, api } = context
-  if ( resource = api.decode request )?
+  if request.resource?
+    context.resource = api.resources[ request.resource.name ]
+  else if ( resource = api.decode request )?
     request.resource = resource
     context.resource = api.resources[ resource.name ]
   else
@@ -68,7 +70,7 @@ supported = Fn.tee ( context ) ->
     else
       context.response =
         description: "unsupported media type"
-  else if method.request[ "content-type" ]?
+  else if method.request?[ "content-type" ]?
     context.response =
       description: "bad request"
 
@@ -91,6 +93,7 @@ authorization = Fn.tee ( context ) ->
       { scheme, credential, parameters }
     else {}
 
+# TODO handle response content negotiation
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
   { accepts, request } = context
   context.response = accept accepts,
