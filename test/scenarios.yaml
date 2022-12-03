@@ -11,7 +11,10 @@
   request:
     target: /foo
     method: post
-    content: "{ 'foo': 'bar' }"
+    content: '{ "foo": "bar" }'
+    headers:
+      content-type:
+        - application/json
   response:
     status: 200
     content:

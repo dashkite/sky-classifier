@@ -2,6 +2,7 @@ import * as Fn from "@dashkite/joy/function"
 import * as Text from "@dashkite/joy/text"
 import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
+import { Accept, MediaType } from "@dashkite/media-type"
 
 describe = Fn.tee ( context ) ->
   { request } = context
@@ -50,33 +51,53 @@ method = Fn.tee ( context ) ->
       description: "method not allowed"
 
 acceptable = Fn.tee ( context ) ->
-  # { request, method } = context
-  # if ( accept = method.accept request )?
-  #   context.accept = accept
-  # else
-  #   context.response =
-  #     description: "not acceptable"
+  { request, method } = context
+  if ( candidates = Sublime.Request.Headers.get "accept" )?
+    if ( targets = method.response[ "content-type" ] )?
+      if ( accept = Accept.selectAll candiates, targets )?
+        context.accept = accept
+      else
+        context.response =
+          description: "not acceptable"
+    else
+      context.accept = candidates
 
 supported = Fn.tee ( context ) ->
   { request, method } = context
   if request.content?
-    if method.contentSupported request
-      if ( content = method.contentFrom request )?
-        request.raw = content: request.content
-        request.content = content
-      else
+    if ( candidates = method.request?[ "content-type" ] )?
+      if ( target = Sublime.Request.Headers.get request, "content-type" )?
+        if ( type = Accept.select candidates, target )?
+          category = MediaType.category type
+        else
+          context.response =
+            description: "unsupported media type"
+      else # malformed request, no content-type
         context.response =
           description: "bad request"
-    else
-      context.response =
-        description: "unsupported media type"
+    category ?= MediaType.infer request.content
+    switch category
+      when "json"
+        request.content = JSON.parse request.content
+      # TODO decode binary encodings?
   else if method.request?[ "content-type" ]?
     context.response =
       description: "bad request"
 
-accept = ( accepts, response ) ->
-  # TODO convert response based on acceptable context property
-  response
+accept = do ({ accept } = {}) ->
+  ( context ) ->
+    { accept, response } = context
+    if response.content? && accept?
+      Sublime.Response.headers.set response, "content-type",
+        type = Accept.selectFromContent response.content, accept
+      if type?    
+        switch MediaType.category type
+          when "json" 
+            response.content = JSON.stringify response.content
+          # TODO possibly attempt to encode binary formats
+      else
+        context.response =
+          description: "unsupported media type"
 
 authorization = Fn.tee ( context ) ->
   { request } = context
@@ -89,15 +110,13 @@ authorization = Fn.tee ( context ) ->
         .map ([ key, value ]) -> 
           [ Text.trim key ]: Text.trim value
         .reduce (( result, value ) -> Object.assign result, value ), {}
-      console.log "sky-classifier", { scheme, credential }
       { scheme, credential, parameters }
     else {}
 
-# TODO handle response content negotiation
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
   { accepts, request } = context
-  context.response = accept accepts,
-    await handler request
+  context.response = await handler request
+  accept context
   if context.head
     # let Sublime take care of the rest
     context.response.description = "no content"

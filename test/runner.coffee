@@ -6,7 +6,6 @@ runner = ( dispatch ) ->
     { request, response: { status, content }} = scenario
     ->
       response = await dispatch request
-      # console.log scenario.name, response
       assert.equal status, response.status
       if content?
         if content.body?
