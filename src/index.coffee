@@ -30,10 +30,12 @@ resource = Fn.tee ( context ) ->
 options = Fn.tee ( context ) ->
   { request, resource } = context
   if request.method == "options"
+    # TODO do we need to avoid sending the CORS header
+    #      if it isn't a CORS request?
     context.response =
       description: "no content"
       headers:
-        allow: [ resource.options ]
+        "access-control-allow-methods": [ resource.options ]
 
 head = Fn.tee ( context ) ->
   { request } = context
@@ -49,6 +51,8 @@ method = Fn.tee ( context ) ->
   else
     context.response =
       description: "method not allowed"
+      headers:
+        allow: [ resources.options ]
 
 acceptable = Fn.tee ( context ) ->
   { request, method } = context
