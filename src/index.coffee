@@ -7,12 +7,7 @@ import { Accept, MediaType } from "@dashkite/media-type"
 describe = Fn.tee ( context ) ->
   { request } = context
   if ( api = await API.Description.discover request )?
-    if request.target == "/"
-      context.response =
-        description: "ok"
-        content: api.data 
-    else
-      context.api = api
+    context.api = api
   else
     context.response =
       description: "not found"
@@ -35,7 +30,12 @@ options = Fn.tee ( context ) ->
     context.response =
       description: "no content"
       headers:
-        "access-control-allow-methods": [ resource.options ]
+        "access-control-allow-methods": [ "*" ]
+        "access-control-allow-origin": [ request.headers.origin[0] ]
+        "access-control-allow-credentials": [ true ]
+        "access-control-expose-headers": [ "*" ]
+        "acess-control-max-age": [ 7200 ]
+        "access-control-allow-headers": [ "*" ]
 
 head = Fn.tee ( context ) ->
   { request } = context
@@ -105,7 +105,7 @@ accept = do ({ accept } = {}) ->
 
 authorization = Fn.tee ( context ) ->
   { request } = context
-  context.request.authorization = do ->
+  context.request.authorization ?= do ->
     if ( header = Sublime.Request.Headers.get request, "authorization" )?
       [ credential, parameters... ] = Text.split ",", Text.trim header
       [ scheme, credential ] = Text.split /\s+/, credential
