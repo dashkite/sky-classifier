@@ -21,6 +21,9 @@ resource = Fn.tee ( context ) ->
   { request, api } = context
   if request.resource?
     context.resource = api.resources[ request.resource.name ]
+    # add target and url if we don't already have one
+    request.target ?= context.resource.encode request.resource.bindings
+    request.url ?= "https://#{ request.domain }/#{ request.target }"
   else if ( resource = api.decode request )?
     request.resource = resource
     context.resource = api.resources[ resource.name ]
