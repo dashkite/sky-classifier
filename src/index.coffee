@@ -6,6 +6,10 @@ import { Accept, MediaType } from "@dashkite/media-type"
 
 describe = Fn.tee ( context ) ->
   { request } = context
+  # add url if possible
+  if request.domain? && request.target?
+    request.url ?= "https://#{ request.domain }/#{ request.target }"
+  console.log "sky-classifier: attempting discovery for", request
   if ( api = await API.Description.discover request )?
     context.api = api
   else
