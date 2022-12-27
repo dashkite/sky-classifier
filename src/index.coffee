@@ -5,9 +5,9 @@ import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 import { Accept, MediaType } from "@dashkite/media-type"
 import description from "./helpers/description"
+import { JSON64 } from "./helpers/utils"
 
 lambdas = {}
-stack = []
 
 url = ( domain, target ) ->
   "https://#{ domain }#{ target }"
@@ -18,12 +18,9 @@ matchRequest = ( request ) ->
       ( Val.equal prevRequest.resource, request.resource ) &&
         ( prevRequest.method == request.method )
 
-checkStack = Fn.tee ( context ) ->
+checkStack = ( context, stack ) ->
   { request } = context
-  if ( stack.find matchRequest request )?
-    console.warn "sky-classifier: request matches 
-      existing request", request
-    context.response = description: "internal server error"
+  !( stack.find matchRequest request )?
 
 # TODO may want to check for empty host header?
 ping = Fn.tee ( context ) ->
@@ -39,10 +36,6 @@ lambda = Fn.tee ( context ) ->
     console.warn "sky-classifier: no matching lambda for 
       domain [ #{ request.domain } ]"
     context.response = description: "internal server error"
-
-push = Fn.tee ( context ) ->
-  { request } = context
-  stack.push request
 
 describe = Fn.tee ( context ) ->
   { request } = context
@@ -64,8 +57,7 @@ describe = Fn.tee ( context ) ->
     }
     context._api = response
     if response.description == "ok"
-      api = API.Description.from JSON.parse response.content
-      context.api = api
+      context.api = API.Description.from JSON.parse response.content
     else
       context.response = description: "not found"
 
@@ -80,6 +72,9 @@ resource = Fn.tee ( context ) ->
     else if ( resource = api.decode request )?
       request.resource = resource
       context.resource = api.resources[ resource.name ]
+      # add target and url if we don't already have one
+      request.target ?= context.resource.encode request.resource.bindings
+      request.url ?= url request.domain, request.target
     else
       context.response = description: "not found"
   if request.resource?.name == "description" && context._api?
@@ -155,7 +150,7 @@ supported = Fn.tee ( context ) ->
 accept = do ({ accept } = {}) ->
   ( context ) ->
     { accept, response } = context
-    if response.content? && accept?
+    if response.content? && accept? && ( Sublime.Response.Status.ok response )
       type = Accept.selectByContent response.content, accept
       Sublime.Response.Headers.set response, "content-type", MediaType.format type
       if type?    
@@ -167,19 +162,40 @@ accept = do ({ accept } = {}) ->
         context.response =
           description: "unsupported media type"
 
+credentialsParse = ( list ) ->
+  for item in list
+    [ credential, parameters... ] = Text.split ",", Text.trim item
+    [ scheme, credential ] = Text.split /\s+/, credential
+    console.log "CREDENTIALS PARSE SCHEME", scheme
+    console.log "CREDENTIALS PARSE CREDENTIAL", credential
+    console.log "CREDENTIALS PARSE PARAMETERS", parameters
+    parameters = parameters
+      .map (parameter) -> Text.split "=", parameter
+      .map ([ key, value ]) -> 
+        [ Text.trim key ]: Text.trim value
+      .reduce (( result, value ) -> Object.assign result, value ), {}
+    { scheme, credential, parameters }
+
 authorization = Fn.tee ( context ) ->
   { request } = context
   context.request.authorization ?= do ->
     if ( header = Sublime.Request.Headers.get request, "authorization" )?
+      authorizations = []
       [ credential, parameters... ] = Text.split ",", Text.trim header
       [ scheme, credential ] = Text.split /\s+/, credential
-      parameters = parameters
-        .map (parameter) -> Text.split "=", parameter
-        .map ([ key, value ]) -> 
-          [ Text.trim key ]: Text.trim value
-        .reduce (( result, value ) -> Object.assign result, value ), {}
-      { scheme, credential, parameters }
-    else {}
+      if scheme == "credentials"
+        list = JSON64.decode credential
+        authorizations = credentialsParse list
+      else
+        parameters = parameters
+          .map (parameter) -> Text.split "=", parameter
+          .map ([ key, value ]) -> 
+            [ Text.trim key ]: Text.trim value
+          .reduce (( result, value ) -> Object.assign result, value ), {}
+        authorizations.push { scheme, credential, parameters }
+      console.log "AUTHORIZATIONS", authorizations
+      authorizations
+    else []
 
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
   { request } = context
@@ -193,19 +209,25 @@ normalize = ( handler ) ->
   ( request ) -> Sublime.response await handler request
 
 run = Fn.curry ( processors, context ) ->
-  for processor in processors
-    context = await processor context
-    break if context.response?
-  stack.pop()
-  context.response
+  stack = []
+  if checkStack context, stack
+    stack.push context.request
+    for processor in processors
+      context = await processor context
+      break if context.response?
+    stack.pop()
+    context.response
+  else
+    console.warn "sky-classifier: request matches 
+      existing request", context.request
+    context.response = description: "internal server error"
+    
 
 classifier = ( context, handler ) ->
   lambdas = context.lambdas
   process = run [
-    checkStack
     ping
     lambda
-    push
     describe
     resource
     options

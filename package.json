@@ -46,6 +46,7 @@
     "@dashkite/joy": "^0.3.16",
     "@dashkite/maeve": "file:../maeve",
     "@dashkite/media-type": "file:../media-type",
-    "@dashkite/sky-api-description": "file:../sky-api-description"
+    "@dashkite/sky-api-description": "file:../sky-api-description",
+    "panda-confidential": "^3.1.2"
   }
 }
