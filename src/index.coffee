@@ -57,6 +57,7 @@ describe = Fn.tee ( context ) ->
     }
     context._api = response
     if response.description == "ok"
+      console.log "sky-classifier: adding description to context"
       context.api = API.Description.from JSON.parse response.content
     else
       context.response = description: "not found"
@@ -150,8 +151,11 @@ supported = Fn.tee ( context ) ->
 accept = do ({ accept } = {}) ->
   ( context ) ->
     { accept, response } = context
+    console.log "ACCEPT ACCEPT", accept
     if response.content? && accept? && ( Sublime.Response.Status.ok response )
+      console.log "ACCEPT CONTENT", response.content
       type = Accept.selectByContent response.content, accept
+      console.log "ACCEPT TYPE", type
       Sublime.Response.Headers.set response, "content-type", MediaType.format type
       if type?    
         switch MediaType.category type
@@ -166,9 +170,6 @@ credentialsParse = ( list ) ->
   for item in list
     [ credential, parameters... ] = Text.split ",", Text.trim item
     [ scheme, credential ] = Text.split /\s+/, credential
-    console.log "CREDENTIALS PARSE SCHEME", scheme
-    console.log "CREDENTIALS PARSE CREDENTIAL", credential
-    console.log "CREDENTIALS PARSE PARAMETERS", parameters
     parameters = parameters
       .map (parameter) -> Text.split "=", parameter
       .map ([ key, value ]) -> 
@@ -199,6 +200,7 @@ authorization = Fn.tee ( context ) ->
 
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
   { request } = context
+  request.api = context.api
   context.response = await handler request
   accept context
   if context.head
