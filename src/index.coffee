@@ -1,62 +1,245 @@
 import * as Fn from "@dashkite/joy/function"
-import { Router } from "@dashkite/uri-router"
+import * as Val from "@dashkite/joy/value"
+import * as Text from "@dashkite/joy/text"
+import * as API from "@dashkite/sky-api-description"
+import * as Sublime from "@dashkite/maeve/sublime"
+import { Accept, MediaType } from "@dashkite/media-type"
+import description from "./helpers/description"
+import { JSON64 } from "./helpers/utils"
 
-buildRouter = ( description ) ->
-  router = Router.create()
-  for name, resource of description.resources
-    router.add
-      template: resource.template
-      data: { name, resource }
-  router
+lambdas = {}
 
-matchAccept = ( actual, expected ) -> true
+url = ( domain, target ) ->
+  "https://#{ domain }#{ target }"
 
-matchMediaType = ( actual, expected ) -> true
+matchRequest = ( request ) ->
+  ( prevRequest ) ->
+    ( prevRequest.domain == request.domain ) && 
+      ( Val.equal prevRequest.resource, request.resource ) &&
+        ( prevRequest.method == request.method )
 
-# IMPORTANT options and head methods should be handled outside the classifier
-# since these are basically variants of the other methods
+checkStack = ( context, stack ) ->
+  { request } = context
+  !( stack.find matchRequest request )?
 
-classify = ( description ) ->
-  router = buildRouter description
-  ( request ) ->
-    console.log "start classifier"
-    console.log { request }
-    if (match = router.match request.target)?
-      console.log { match }
-      { resource, name } = match.data
-      if (method = resource.methods[ request.method ])?
-        { signatures } = method
-        acceptable = do ->
-          if signatures.response[ "content-type" ]?
-            matchAccept request.headers.accept,
-              signatures.response[ "content-type" ]
-          else
-            true
-        if acceptable
-          supported = do ->
-            if signatures.request["content-type"]?
-              matchMediaType request.headers[ "content-type" ], 
-                signatures.request["content-type"]
-            else
-              true
-          if supported
-            if ( header = request.headers["content-type"]?[0] )?
-              isJSON = /[/+]json$/.test header
-            else
-              isJSON = false
+# TODO may want to check for empty host header?
+ping = Fn.tee ( context ) ->
+  { request } = context
+  if request.target == "/ping"
+    context.response = description: "ok"
 
-            resource: name
-            method: request.method
-            bindings: match.bindings
-            signatures: signatures
-            json: ( JSON.parse request.content ) if isJSON
-          else
-            "unsupported media type"
-        else
-          "not acceptable"
-      else
-        "method not allowed"
+lambda = Fn.tee ( context ) ->
+  { request } = context
+  if ( lambda = lambdas[ request.domain ] )?
+    request.lambda = lambda
+  else
+    console.warn "sky-classifier: no matching lambda for 
+      domain [ #{ request.domain } ]"
+    context.response = description: "internal server error"
+
+describe = Fn.tee ( context ) ->
+  { request } = context
+  if request.resource?.name == "description"
+    context.resource = API.Resource.from { 
+      name: "description"
+      resource: description
+    }   
+    request.target ?= context.resource.encode request.resource.bindings
+    request.url ?= url request.domain, request.target
+  else
+    console.log "sky-classifier: attempting discovery for", request
+    response = await Sky.fetch {
+      domain: request.domain
+      lambda: request.lambda
+      resource: { name: "description" }
+      method: "get"
+      headers: accept: [ "application/json" ]
+    }
+    context._api = response
+    if response.description == "ok"
+      console.log "sky-classifier: adding description to context"
+      context.api = API.Description.from JSON.parse response.content
     else
-      "not found"
+      context.response = description: "not found"
 
-export default classify
+resource = Fn.tee ( context ) ->
+  { request, api } = context
+  if !context.resource?
+    if request.resource?
+      context.resource = api.resources[ request.resource.name ]
+      # add target and url if we don't already have one
+      request.target ?= context.resource.encode request.resource.bindings
+      request.url ?= url request.domain, request.target
+    else if ( resource = api.decode request )?
+      request.resource = resource
+      context.resource = api.resources[ resource.name ]
+      # add target and url if we don't already have one
+      request.target ?= context.resource.encode request.resource.bindings
+      request.url ?= url request.domain, request.target
+    else
+      context.response = description: "not found"
+  if request.resource?.name == "description" && context._api?
+    context.response = context._api
+
+options = Fn.tee ( context ) ->
+  { request, resource } = context
+  if request.method == "options"
+    console.log "OPTIONS REQUEST", request
+    # TODO do we need to avoid sending the CORS header
+    #      if it isn't a CORS request?
+    context.response =
+      description: "no content"
+      headers:
+        "access-control-allow-methods": [ "*" ]
+        "access-control-allow-origin": [ request.headers.origin[0] ]
+        "access-control-allow-credentials": [ true ]
+        "access-control-expose-headers": [ "*" ]
+        "acess-control-max-age": [ 7200 ]
+        "access-control-allow-headers": [ "*" ]
+
+head = Fn.tee ( context ) ->
+  { request } = context
+  context.head = if request.method == "head"
+    request.method = "get"
+    true
+  else false
+
+method = Fn.tee ( context ) ->
+  { request, resource } = context
+  if ( method = resource.methods[ request.method ])?
+    context.method = method
+  else
+    context.response =
+      description: "method not allowed"
+      headers:
+        allow: [ resources.options ]
+
+acceptable = Fn.tee ( context ) ->
+  { request, method } = context
+  if ( candidates = Sublime.Request.Headers.get request, "accept" )?
+    if ( targets = method.response[ "content-type" ] )?
+      if ( accept = Accept.selectAll candidates, targets )?
+        context.accept = accept
+      else
+        context.response =
+          description: "not acceptable"
+    else
+      context.accept = candidates
+
+supported = Fn.tee ( context ) ->
+  { request, method } = context
+  if request.content?
+    if ( candidates = method.request?[ "content-type" ] )?
+      if ( target = Sublime.Request.Headers.get request, "content-type" )?
+        if ( type = Accept.select candidates, target )?
+          category = MediaType.category type
+        else
+          context.response =
+            description: "unsupported media type"
+      else # malformed request, no content-type
+        context.response =
+          description: "bad request"
+    category ?= MediaType.infer request.content
+    switch category
+      when "json"
+        request.content = JSON.parse request.content
+      # TODO decode binary encodings?
+  else if method.request?[ "content-type" ]?
+    context.response =
+      description: "bad request"
+
+accept = do ({ accept } = {}) ->
+  ( context ) ->
+    { accept, response } = context
+    console.log "ACCEPT ACCEPT", accept
+    if response.content? && accept? && ( Sublime.Response.Status.ok response )
+      console.log "ACCEPT CONTENT", response.content
+      type = Accept.selectByContent response.content, accept
+      console.log "ACCEPT TYPE", type
+      Sublime.Response.Headers.set response, "content-type", MediaType.format type
+      if type?    
+        switch MediaType.category type
+          when "json" 
+            response.content = JSON.stringify response.content
+          # TODO possibly attempt to encode binary formats
+      else
+        context.response =
+          description: "unsupported media type"
+
+credentialsParse = ( list ) ->
+  for item in list
+    [ credential, parameters... ] = Text.split ",", Text.trim item
+    [ scheme, credential ] = Text.split /\s+/, credential
+    parameters = parameters
+      .map (parameter) -> Text.split "=", parameter
+      .map ([ key, value ]) -> 
+        [ Text.trim key ]: Text.trim value
+      .reduce (( result, value ) -> Object.assign result, value ), {}
+    { scheme, credential, parameters }
+
+authorization = Fn.tee ( context ) ->
+  { request } = context
+  context.request.authorization ?= do ->
+    if ( header = Sublime.Request.Headers.get request, "authorization" )?
+      authorizations = []
+      [ credential, parameters... ] = Text.split ",", Text.trim header
+      [ scheme, credential ] = Text.split /\s+/, credential
+      if scheme == "credentials"
+        list = JSON64.decode credential
+        authorizations = credentialsParse list
+      else
+        parameters = parameters
+          .map (parameter) -> Text.split "=", parameter
+          .map ([ key, value ]) -> 
+            [ Text.trim key ]: Text.trim value
+          .reduce (( result, value ) -> Object.assign result, value ), {}
+        authorizations.push { scheme, credential, parameters }
+      console.log "AUTHORIZATIONS", authorizations
+      authorizations
+    else []
+
+invoke = Fn.curry Fn.rtee ( handler, context ) ->
+  { request } = context
+  request.api = context.api
+  context.response = await handler request
+  accept context
+  if context.head
+    # let Sublime take care of the rest
+    context.response.description = "no content"
+
+normalize = ( handler ) ->
+  ( request ) -> Sublime.response await handler request
+
+run = Fn.curry ( processors, context ) ->
+  stack = []
+  if checkStack context, stack
+    stack.push context.request
+    for processor in processors
+      context = await processor context
+      break if context.response?
+    stack.pop()
+    context.response
+  else
+    console.warn "sky-classifier: request matches 
+      existing request", context.request
+    context.response = description: "internal server error"
+    
+
+classifier = ( context, handler ) ->
+  lambdas = context.lambdas
+  process = run [
+    ping
+    lambda
+    describe
+    resource
+    options
+    head
+    method
+    acceptable
+    supported
+    authorization
+    invoke handler
+  ]
+  normalize ( request ) -> process { request }
+
+export { classifier }
