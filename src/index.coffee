@@ -194,7 +194,6 @@ authorization = Fn.tee ( context ) ->
             [ Text.trim key ]: Text.trim value
           .reduce (( result, value ) -> Object.assign result, value ), {}
         authorizations.push { scheme, credential, parameters }
-      console.log "AUTHORIZATIONS", authorizations
       authorizations
     else []
 
