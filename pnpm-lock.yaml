@@ -5,19 +5,19 @@ specifiers:
   '@dashkite/amen-console': ^0.0.1
   '@dashkite/assert': ^0.1.4
   '@dashkite/genie': ^0.5.6
-  '@dashkite/genie-presets': ^0.5.6
+  '@dashkite/genie-presets': ^0.5.7
   '@dashkite/joy': ^0.3.16
-  '@dashkite/maeve': file:../maeve
-  '@dashkite/media-type': file:../media-type
-  '@dashkite/sky-api-description': file:../sky-api-description
-  '@dashkite/sky-dispatcher': file:../sky-dispatcher
+  '@dashkite/maeve': link:../maeve
+  '@dashkite/media-type': link:../media-type
+  '@dashkite/sky-api-description': link:../sky-api-description
+  '@dashkite/sky-dispatcher': link:../sky-dispatcher
   panda-confidential: ^3.1.2
 
 dependencies:
   '@dashkite/joy': 0.3.16
-  '@dashkite/maeve': file:../maeve
-  '@dashkite/media-type': file:../media-type
-  '@dashkite/sky-api-description': file:../sky-api-description
+  '@dashkite/maeve': link:../maeve
+  '@dashkite/media-type': link:../media-type
+  '@dashkite/sky-api-description': link:../sky-api-description
   panda-confidential: 3.1.2
 
 devDependencies:
@@ -26,7 +26,7 @@ devDependencies:
   '@dashkite/assert': 0.1.4
   '@dashkite/genie': 0.5.11
   '@dashkite/genie-presets': 0.5.7
-  '@dashkite/sky-dispatcher': file:../sky-dispatcher
+  '@dashkite/sky-dispatcher': link:../sky-dispatcher
 
 packages:
 
@@ -2897,18 +2897,6 @@ packages:
     engines: {node: 4.x || >=6.0.0}
     dev: true
 
-  /node-fetch/2.6.8:
-    resolution: {integrity: sha512-RZ6dBYuj8dRSfxpUSu+NsdF1dpPpluJxwOp+6IoDp/sH2QNDSvurYsAa+F1WxY2RjA1iP93xhcsUoYbF2XBqVg==}
-    engines: {node: 4.x || >=6.0.0}
-    peerDependencies:
-      encoding: ^0.1.0
-    peerDependenciesMeta:
-      encoding:
-        optional: true
-    dependencies:
-      whatwg-url: 5.0.0
-    dev: false
-
   /node-releases/2.0.8:
     resolution: {integrity: sha512-dFSmB8fFHEH/s81Xi+Y/15DQY6VHW81nXRj86EMSL3lmuTmK1e+aT4wrFCkTbm+gSwkw4KpX+rT/pMM2c1mF+A==}
     dev: true
@@ -3574,6 +3562,7 @@ packages:
   /statuses/2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
+    dev: true
 
   /string_decoder/1.3.0:
     resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
@@ -3699,10 +3688,6 @@ packages:
     resolution: {integrity: sha1-zCAOqyYT9BZtJ/+a/HylbUnfbrQ=}
     dev: true
 
-  /tr46/0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-    dev: false
-
   /tslib/2.4.1:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
     dev: true
@@ -3805,17 +3790,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /webidl-conversions/3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-    dev: false
-
-  /whatwg-url/5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
-    dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
-    dev: false
-
   /which/2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
@@ -3869,62 +3843,3 @@ packages:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
     dev: true
-
-  file:../maeve:
-    resolution: {directory: ../maeve, type: directory}
-    name: '@dashkite/maeve'
-    version: 0.0.5
-    dependencies:
-      '@dashkite/bake': 0.0.6
-      '@dashkite/joy': 0.3.16
-      '@dashkite/media-type': file:../media-type
-      node-fetch: 2.6.8
-      statuses: 2.0.1
-    transitivePeerDependencies:
-      - encoding
-    dev: false
-
-  file:../media-type:
-    resolution: {directory: ../media-type, type: directory}
-    name: '@dashkite/media-type'
-    version: 0.0.0
-    dependencies:
-      '@dashkite/joy': 0.3.16
-      '@dashkite/parse': file:../parse
-    dev: false
-
-  file:../parse:
-    resolution: {directory: ../parse, type: directory}
-    name: '@dashkite/parse'
-    version: 0.3.1
-    dependencies:
-      '@dashkite/joy': 0.3.16
-    dev: false
-
-  file:../sky-api-description:
-    resolution: {directory: ../sky-api-description, type: directory}
-    name: '@dashkite/sky-api-description'
-    version: 0.0.0
-    dependencies:
-      '@dashkite/joy': 0.3.16
-      '@dashkite/maeve': file:../maeve
-      '@dashkite/media-type': file:../media-type
-      '@dashkite/url-codex': file:../url-codex
-    transitivePeerDependencies:
-      - encoding
-    dev: false
-
-  file:../sky-dispatcher:
-    resolution: {directory: ../sky-dispatcher, type: directory}
-    name: '@dashkite/sky-dispatcher'
-    version: 0.0.2
-    dev: true
-
-  file:../url-codex:
-    resolution: {directory: ../url-codex, type: directory}
-    name: '@dashkite/url-codex'
-    version: 0.0.0
-    dependencies:
-      '@dashkite/joy': 0.3.16
-      '@dashkite/parse': file:../parse
-    dev: false
