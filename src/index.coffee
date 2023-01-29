@@ -4,6 +4,7 @@ import * as Text from "@dashkite/joy/text"
 import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 import { Accept, MediaType } from "@dashkite/media-type"
+import { Authorization } from "@dashkite/http-headers"
 import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 
@@ -166,36 +167,17 @@ accept = do ({ accept } = {}) ->
         context.response =
           description: "unsupported media type"
 
-credentialsParse = ( list ) ->
-  for item in list
-    [ credential, parameters... ] = Text.split ",", Text.trim item
-    [ scheme, credential ] = Text.split /\s+/, credential
-    parameters = parameters
-      .map (parameter) -> Text.split "=", parameter
-      .map ([ key, value ]) -> 
-        [ Text.trim key ]: Text.trim value
-      .reduce (( result, value ) -> Object.assign result, value ), {}
-    { scheme, credential, parameters }
-
 authorization = Fn.tee ( context ) ->
   { request } = context
   context.request.authorization ?= do ->
     if ( header = Sublime.Request.Headers.get request, "authorization" )?
-      authorizations = []
-      [ credential, parameters... ] = Text.split ",", Text.trim header
-      [ scheme, credential ] = Text.split /\s+/, credential
-      if scheme == "credentials"
-        list = JSON64.decode credential
-        authorizations = credentialsParse list
+      authorization = Authorization.parse header
+      if authorization.scheme == "credentials"
+        JSON64
+          .decode authorization.token
+          .map ( value ) -> Authorization.parse value
       else
-        parameters = parameters
-          .map (parameter) -> Text.split "=", parameter
-          .map ([ key, value ]) -> 
-            [ Text.trim key ]: Text.trim value
-          .reduce (( result, value ) -> Object.assign result, value ), {}
-        authorizations.push { scheme, credential, parameters }
-      console.log "AUTHORIZATIONS", authorizations
-      authorizations
+        [ authorization ]
     else []
 
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
