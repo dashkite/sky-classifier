@@ -79,7 +79,7 @@ resource = Fn.tee ( context ) ->
       request.url ?= url request.domain, request.target
     else
       context.response = description: "not found"
-  if request.resource?.name == "description" && context._api?
+  if request.resource?.name == "description" && context._api? && request.method == "get"
     context.response = context._api
 
 options = Fn.tee ( context ) ->
