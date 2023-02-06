@@ -1,6 +1,7 @@
 import * as Fn from "@dashkite/joy/function"
 import * as Val from "@dashkite/joy/value"
 import * as Text from "@dashkite/joy/text"
+import * as Type from "@dashkite/joy/type"
 import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 import { Accept, MediaType } from "@dashkite/media-type"
@@ -8,8 +9,10 @@ import { Authorization } from "@dashkite/http-headers"
 import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 import JSONValidator from "ajv/dist/2020"
+import addFormats from "ajv-formats"
 
 validator = new JSONValidator allowUnionTypes: true
+addFormats validator
 
 lambdas = {}
 
@@ -170,23 +173,24 @@ accept = do ({ accept } = {}) ->
         context.response =
           description: "unsupported media type"
 
-valid = ( context ) ->
+valid = Fn.tee ( context ) ->
   { request, method } = context
-  if method.response.schema?
-    ajv = new Ajv allowUnionTypes: true
-    if ! ( validator.validate method.response.schema, request.content )
-      context.response = 
-        description: "bad request"
+  if request.content?
+    if method.request.schema?
+      if !( validator.validate method.request.schema, request.content )
+        context.response = 
+          description: "bad request"
 
-consistent = ( context ) ->
+consistent = Fn.tee ( context ) ->
   { request } = context
-  if Type.isObject request.content
-    for key, value of request.content
-      if request.resource.bindings[ key ]? 
-        if request.resource.bindings[ key ] != value
-          context.response =
-            description: "conflict"
-          return
+  if request.content?
+    if Type.isObject request.content
+      for key, value of request.content
+        if request.resource.bindings[ key ]? 
+          if request.resource.bindings[ key ] != value
+            context.response =
+              description: "conflict"
+            return
       
 authorization = Fn.tee ( context ) ->
   { request } = context
