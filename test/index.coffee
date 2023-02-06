@@ -20,7 +20,7 @@ globalThis.Sky =
 # we would usually pass in another handler,
 # but for test purposes we just skip ahead
 # to our mock fetch
-run = runner classifier Sky.fetch
+run = runner classifier { lambdas }, Sky.fetch
 
 do ->
 
