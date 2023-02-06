@@ -181,11 +181,12 @@ valid = ( context ) ->
 consistent = ( context ) ->
   { request } = context
   if Type.isObject request.content
-    for key, value of request.resource.bindings
-      if response.content[ key ] != value
-        context.response =
-          description: "conflict"
-        return
+    for key, value of request.content
+      if request.resource.bindings[ key ]? 
+        if request.resource.bindings[ key ] != value
+          context.response =
+            description: "conflict"
+          return
       
 authorization = Fn.tee ( context ) ->
   { request } = context
