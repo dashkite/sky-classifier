@@ -7,6 +7,9 @@ import { Accept, MediaType } from "@dashkite/media-type"
 import { Authorization } from "@dashkite/http-headers"
 import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
+import JSONValidator from "ajv/dist/2020"
+
+validator = new JSONValidator allowUnionTypes: true
 
 lambdas = {}
 
@@ -167,6 +170,14 @@ accept = do ({ accept } = {}) ->
         context.response =
           description: "unsupported media type"
 
+valid = ( context ) ->
+  { request, method } = context
+  if method.response.schema?
+    ajv = new Ajv allowUnionTypes: true
+    if ! ( validator.validate method.response.schema, request.content )
+      context.response = 
+        description: "bad request"
+
 authorization = Fn.tee ( context ) ->
   { request } = context
   context.request.authorization ?= do ->
@@ -219,6 +230,7 @@ classifier = ( context, handler ) ->
     method
     acceptable
     supported
+    valid
     authorization
     invoke handler
   ]
