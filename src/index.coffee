@@ -178,6 +178,15 @@ valid = ( context ) ->
       context.response = 
         description: "bad request"
 
+consistent = ( context ) ->
+  { request } = context
+  if Type.isObject request.content
+    for key, value of request.resource.bindings
+      if response.content[ key ] != value
+        context.response =
+          description: "conflict"
+        return
+      
 authorization = Fn.tee ( context ) ->
   { request } = context
   context.request.authorization ?= do ->
@@ -231,6 +240,7 @@ classifier = ( context, handler ) ->
     acceptable
     supported
     valid
+    consistent
     authorization
     invoke handler
   ]
