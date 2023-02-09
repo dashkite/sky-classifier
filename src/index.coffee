@@ -94,6 +94,8 @@ options = Fn.tee ( context ) ->
     console.log "OPTIONS REQUEST", request
     # TODO do we need to avoid sending the CORS header
     #      if it isn't a CORS request?
+    # TODO we should be basing the headers on the
+    # api description
     context.response =
       description: "no content"
       headers:
