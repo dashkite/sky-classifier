@@ -10,6 +10,7 @@ import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 import JSONValidator from "ajv/dist/2020"
 import addFormats from "ajv-formats"
+import { html as descriptionHTML } from "@dashkite/api-documentation-generator"
 
 validator = new JSONValidator allowUnionTypes: true
 addFormats validator
@@ -159,21 +160,22 @@ supported = Fn.tee ( context ) ->
 
 accept = do ({ accept } = {}) ->
   ( context ) ->
-    { accept, response } = context
-    console.log "ACCEPT ACCEPT", accept
+    { accept, response, request } = context
     if response.content? && accept? && ( Sublime.Response.Status.ok response )
-      console.log "ACCEPT CONTENT", response.content
-      type = Accept.selectByContent response.content, accept
-      console.log "ACCEPT TYPE", type
-      Sublime.Response.Headers.set response, "content-type", MediaType.format type
-      if type?    
-        switch MediaType.category type
-          when "json" 
-            response.content = JSON.stringify response.content
-          # TODO possibly attempt to encode binary formats
+      if ( Accept.select accept, "text/html" )? && request.resource.name == "description"
+        Sublime.Response.Headers.set response, "content-type", MediaType.format "text/html"
+        response.content = await descriptionHTML response.content
       else
-        context.response =
-          description: "unsupported media type"
+        type = Accept.selectByContent response.content, accept
+        Sublime.Response.Headers.set response, "content-type", MediaType.format type
+        if type?    
+          switch MediaType.category type
+            when "json" 
+              response.content = JSON.stringify response.content
+            # TODO possibly attempt to encode binary formats
+        else
+          context.response =
+            description: "unsupported media type"
 
 valid = Fn.tee ( context ) ->
   { request, method } = context
