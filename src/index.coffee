@@ -5,11 +5,67 @@ import * as Type from "@dashkite/joy/type"
 import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 import { Accept, MediaType } from "@dashkite/media-type"
-import { Authorization } from "@dashkite/http-headers"
+import { Authorization, Link } from "@dashkite/http-headers"
 import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 import JSONValidator from "ajv/dist/2020"
 import addFormats from "ajv-formats"
+
+Normalize =
+
+  location: Fn.tee ( response ) ->
+    if ( values = response.headers.location )?
+      response.headers.location = do ->
+        for value in values
+          if !( Type.isObject value )
+            API.Description.from value
+              .encode()
+          else value
+      
+
+  link: Fn.tee ( response ) ->
+    if ( values = response.headers.link )?
+      response.headers.link = do ->
+        for { url, resource, parameters } in values
+          if !( Type.isObject value )
+            url ?= API.Description
+              .from resource
+              .encode()
+            Link.format { url, parameters }
+          else value
+
+  date: Fn.tee ( response ) ->
+    if ( values = response.headers.data )?
+      response.headers.data = do ->
+        for value in values
+          if !( Type.isDate value )
+            Response.Headers.set response, "date",
+              value.toUTCString()
+          else value
+
+  "last-modified": Fn.tee ( response ) ->
+    if ( values = response.headers.data )?
+      response.headers.data = do ->
+        for value in values
+          if !( Type.isDate value )
+            Response.Headers.set response, "last-modified",
+              value.toUTCString()
+          else value
+
+Normalize.links = Fn.tee Fn.pipe [
+  Normalize.location
+  Normalize.link
+]
+
+Normalize.dates = Fn.tee Fn.pipe [
+  Normalize.date
+  Normalize[ "last-modified" ]
+]
+
+normalize = Fn.tee Fn.pipe [
+  Normalize.links
+  Normalize.dates
+]
 
 validator = new JSONValidator allowUnionTypes: true
 addFormats validator
@@ -46,13 +102,11 @@ lambda = Fn.tee ( context ) ->
 
 describe = Fn.tee ( context ) ->
   { request } = context
-  if request.resource?.name == "description"
+  if request.target == "/"
     context.resource = API.Resource.from { 
       name: "description"
       resource: description
     }   
-    request.target ?= context.resource.encode request.resource.bindings
-    request.url ?= url request.domain, request.target
   else
     console.log "sky-classifier: attempting discovery for", request
     response = await Sky.fetch {
@@ -214,9 +268,6 @@ invoke = Fn.curry Fn.rtee ( handler, context ) ->
     # let Sublime take care of the rest
     context.response.description = "no content"
 
-normalize = ( handler ) ->
-  ( request ) -> Sublime.response await handler request
-
 run = Fn.curry ( processors, context ) ->
   stack = []
   if checkStack context, stack
@@ -231,24 +282,29 @@ run = Fn.curry ( processors, context ) ->
       existing request", context.request
     context.response = description: "internal server error"
     
+initialize = Fn.curry ( context, request ) ->
+  { ( structuredClone context )..., request }
 
 classifier = ( context, handler ) ->
-  lambdas = context.lambdas
-  process = run [
-    ping
-    lambda
-    describe
-    resource
-    options
-    head
-    method
-    acceptable
-    supported
-    valid
-    consistent
-    authorization
-    invoke handler
+  Fn.flow [
+    initialize context
+    run [
+      ping
+      lambda
+      describe
+      resource
+      options
+      head
+      method
+      acceptable
+      supported
+      valid
+      consistent
+      authorization
+      invoke handler
+    ]    
+    Sublime.response
+    normalize
   ]
-  normalize ( request ) -> process { request }
 
 export { classifier }
