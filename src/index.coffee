@@ -155,7 +155,7 @@ options = Fn.tee ( context ) ->
         "access-control-allow-origin": [ request.headers.origin[0] ]
         "access-control-allow-credentials": [ true ]
         "access-control-expose-headers": [ "*" ]
-        "acess-control-max-age": [ 7200 ]
+        "access-control-max-age": [ 7200 ]
         "access-control-allow-headers": [ "*" ]
 
 head = Fn.tee ( context ) ->
@@ -290,10 +290,12 @@ classifier = ( context, handler ) ->
     initialize context
     run [
       ping
+      # we'll need to move this back down once we compute meaningful
+      # responses for CORS headers
+      options
       lambda
       describe
       resource
-      options
       head
       method
       acceptable
