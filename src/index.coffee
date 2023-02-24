@@ -10,6 +10,7 @@ import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 import JSONValidator from "ajv/dist/2020"
 import addFormats from "ajv-formats"
+import { html as descriptionHTML } from "@dashkite/api-documentation-generator"
 
 Normalize =
 
@@ -17,8 +18,8 @@ Normalize =
     if ( values = response.headers.location )?
       response.headers.location = do ->
         for value in values
-          if !( Type.isObject value )
-            API.Description.from value
+          if Type.isObject value
+            API.Resource.from value
               .encode()
           else value
       
@@ -26,9 +27,10 @@ Normalize =
   link: Fn.tee ( response ) ->
     if ( values = response.headers.link )?
       response.headers.link = do ->
-        for { url, resource, parameters } in values
-          if !( Type.isObject value )
-            url ?= API.Description
+        for value in values
+          if Type.isObject value
+            { url, resource, parameters } = value
+            url ?= API.Resource
               .from resource
               .encode()
             Link.format { url, parameters }
@@ -102,11 +104,14 @@ lambda = Fn.tee ( context ) ->
 
 describe = Fn.tee ( context ) ->
   { request } = context
-  if request.target == "/"
+  if request.target == "/" || request.resource?.name == "description"
     context.resource = API.Resource.from { 
       name: "description"
       resource: description
-    }   
+    }
+    request.target ?= "/"
+    request.url ?= url request.domain, request.target
+    request.resource ?= { name: "description" }
   else
     console.log "sky-classifier: attempting discovery for", request
     response = await Sky.fetch {
@@ -116,7 +121,6 @@ describe = Fn.tee ( context ) ->
       method: "get"
       headers: accept: [ "application/json" ]
     }
-    context._api = response
     if response.description == "ok"
       console.log "sky-classifier: adding description to context"
       context.api = API.Description.from JSON.parse response.content
@@ -139,8 +143,6 @@ resource = Fn.tee ( context ) ->
       request.url ?= url request.domain, request.target
     else
       context.response = description: "not found"
-  if request.resource?.name == "description" && context._api? && request.method == "get"
-    context.response = context._api
 
 options = Fn.tee ( context ) ->
   { request, resource } = context
@@ -148,6 +150,8 @@ options = Fn.tee ( context ) ->
     console.log "OPTIONS REQUEST", request
     # TODO do we need to avoid sending the CORS header
     #      if it isn't a CORS request?
+    # TODO we should be basing the headers on the
+    # api description
     context.response =
       description: "no content"
       headers:
@@ -156,7 +160,7 @@ options = Fn.tee ( context ) ->
         "access-control-allow-credentials": [ true ]
         "access-control-expose-headers": [ "*" ]
         "access-control-max-age": [ 7200 ]
-        "access-control-allow-headers": [ "*" ]
+        "access-control-allow-headers": [ "Authorization", "*" ]
 
 head = Fn.tee ( context ) ->
   { request } = context
@@ -211,21 +215,22 @@ supported = Fn.tee ( context ) ->
 
 accept = do ({ accept } = {}) ->
   ( context ) ->
-    { accept, response } = context
-    console.log "ACCEPT ACCEPT", accept
+    { accept, response, request } = context
     if response.content? && accept? && ( Sublime.Response.Status.ok response )
-      console.log "ACCEPT CONTENT", response.content
-      type = Accept.selectByContent response.content, accept
-      console.log "ACCEPT TYPE", type
-      Sublime.Response.Headers.set response, "content-type", MediaType.format type
-      if type?    
-        switch MediaType.category type
-          when "json" 
-            response.content = JSON.stringify response.content
-          # TODO possibly attempt to encode binary formats
+      if ( type = Accept.select accept, "text/html" )? && request.resource.name == "description"
+        Sublime.Response.Headers.set response, "content-type", MediaType.format type
+        response.content = await descriptionHTML response.content
       else
-        context.response =
-          description: "unsupported media type"
+        type = Accept.selectByContent response.content, accept
+        Sublime.Response.Headers.set response, "content-type", MediaType.format type
+        if type?    
+          switch MediaType.category type
+            when "json" 
+              response.content = JSON.stringify response.content
+            # TODO possibly attempt to encode binary formats
+        else
+          context.response =
+            description: "unsupported media type"
 
 valid = Fn.tee ( context ) ->
   { request, method } = context
@@ -262,8 +267,9 @@ authorization = Fn.tee ( context ) ->
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
   { request } = context
   request.api = context.api
+  console.log request
   context.response = await handler request
-  accept context
+  await accept context
   if context.head
     # let Sublime take care of the rest
     context.response.description = "no content"
@@ -283,6 +289,7 @@ run = Fn.curry ( processors, context ) ->
     context.response = description: "internal server error"
     
 initialize = Fn.curry ( context, request ) ->
+  lambdas = context.lambdas
   { ( structuredClone context )..., request }
 
 classifier = ( context, handler ) ->

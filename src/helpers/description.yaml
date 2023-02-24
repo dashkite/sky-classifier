@@ -4,6 +4,7 @@ methods:
     response:
       content-type:
         - application/json
+        - text/html
       status:
         - 200
 

@@ -44,6 +44,7 @@
     "@dashkite/sky-dispatcher": "link:../sky-dispatcher"
   },
   "dependencies": {
+    "@dashkite/api-documentation-generator": "link:../api-documentation-generator",
     "@dashkite/http-headers": "link:../http-headers",
     "@dashkite/joy": "^0.3.16",
     "@dashkite/maeve": "link:../maeve",
