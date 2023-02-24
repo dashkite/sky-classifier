@@ -47,13 +47,14 @@ lambda = Fn.tee ( context ) ->
 
 describe = Fn.tee ( context ) ->
   { request } = context
-  if request.resource?.name == "description"
+  if request.target == "/" || request.resource?.name == "description"
     context.resource = API.Resource.from { 
       name: "description"
       resource: description
-    }   
-    request.target ?= context.resource.encode request.resource.bindings
+    }
+    request.target ?= "/"
     request.url ?= url request.domain, request.target
+    request.resource ?= { name: "description" }
   else
     console.log "sky-classifier: attempting discovery for", request
     response = await Sky.fetch {
@@ -63,7 +64,6 @@ describe = Fn.tee ( context ) ->
       method: "get"
       headers: accept: [ "application/json" ]
     }
-    context._api = response
     if response.description == "ok"
       console.log "sky-classifier: adding description to context"
       context.api = API.Description.from JSON.parse response.content
@@ -86,8 +86,6 @@ resource = Fn.tee ( context ) ->
       request.url ?= url request.domain, request.target
     else
       context.response = description: "not found"
-  if request.resource?.name == "description" && context._api? && request.method == "get"
-    context.response = context._api
 
 options = Fn.tee ( context ) ->
   { request, resource } = context
@@ -162,8 +160,8 @@ accept = do ({ accept } = {}) ->
   ( context ) ->
     { accept, response, request } = context
     if response.content? && accept? && ( Sublime.Response.Status.ok response )
-      if ( Accept.select accept, "text/html" )? && request.resource.name == "description"
-        Sublime.Response.Headers.set response, "content-type", MediaType.format "text/html"
+      if ( type = Accept.select accept, "text/html" )? && request.resource.name == "description"
+        Sublime.Response.Headers.set response, "content-type", MediaType.format type
         response.content = await descriptionHTML response.content
       else
         type = Accept.selectByContent response.content, accept
@@ -213,7 +211,7 @@ invoke = Fn.curry Fn.rtee ( handler, context ) ->
   { request } = context
   request.api = context.api
   context.response = await handler request
-  accept context
+  await accept context
   if context.head
     # let Sublime take care of the rest
     context.response.description = "no content"
