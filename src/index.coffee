@@ -16,25 +16,23 @@ Normalize =
 
   location: Fn.tee ( response ) ->
     if ( values = response.headers.location )?
-      response.headers.location = do ->
-        for value in values
-          if Type.isObject value
-            API.Resource.from value
-              .encode()
-          else value
+      response.headers.location = values.map ( value ) ->
+        if Type.isObject value
+          API.Resource
+            .from value
+            .encode()
+        else value
       
-
   link: Fn.tee ( response ) ->
     if ( values = response.headers.link )?
-      response.headers.link = do ->
-        for value in values
-          if Type.isObject value
-            { url, resource, parameters } = value
-            url ?= API.Resource
-              .from resource
-              .encode()
-            Link.format { url, parameters }
-          else value
+      response.headers.link = values.map ( value ) ->
+        if Type.isObject value
+          { url, resource, parameters } = value
+          url ?= API.Resource
+            .from resource
+            .encode()
+          Link.format { url, parameters }
+        else value
 
   date: Fn.tee ( response ) ->
     if ( values = response.headers.data )?
