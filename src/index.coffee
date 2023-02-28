@@ -277,7 +277,6 @@ invoke = Fn.curry Fn.rtee ( handler, context ) ->
   console.log "sky-classifier: invoke"
   { request } = context
   request.api = context.api
-  console.log request
   context.response = await handler request
   await accept context
   if context.head
