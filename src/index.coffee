@@ -101,7 +101,7 @@ lambda = Fn.tee ( context ) ->
     context.response = description: "internal server error"
 
 describe = Fn.tee ( context ) ->
-  console.log "sky-classifier: describe"
+  # console.log "sky-classifier: describe"
   { request } = context
   if request.target == "/" || request.resource?.name == "description"
     context.resource = API.Resource.from { 
@@ -112,7 +112,7 @@ describe = Fn.tee ( context ) ->
     request.url ?= url request.domain, request.target
     request.resource ?= { name: "description" }
   else
-    console.log "sky-classifier: attempting discovery for", request
+    # console.log "sky-classifier: attempting discovery for", request
     response = await Sky.fetch {
       domain: request.domain
       lambda: request.lambda
@@ -121,13 +121,13 @@ describe = Fn.tee ( context ) ->
       headers: accept: [ "application/json" ]
     }
     if response.description == "ok"
-      console.log "sky-classifier: adding description to context"
+      # console.log "sky-classifier: adding description to context"
       context.api = API.Description.from JSON.parse response.content
     else
       context.response = description: "not found"
 
 resource = Fn.tee ( context ) ->
-  console.log "sky-classifier: resource"
+  # console.log "sky-classifier: resource"
   { request, api } = context
   if !context.resource?
     if request.resource?
@@ -145,10 +145,10 @@ resource = Fn.tee ( context ) ->
       context.response = description: "not found"
 
 options = Fn.tee ( context ) ->
-  console.log "sky-classifier: options"
+  # console.log "sky-classifier: options"
   { request, resource } = context
   if request.method == "options"
-    console.log "OPTIONS REQUEST", request
+    # console.log "OPTIONS REQUEST", request
     # TODO do we need to avoid sending the CORS header
     #      if it isn't a CORS request?
     # TODO we should be basing the headers on the
@@ -164,7 +164,7 @@ options = Fn.tee ( context ) ->
         "access-control-allow-headers": [ "Authorization", "*" ]
 
 head = Fn.tee ( context ) ->
-  console.log "sky-classifier: head"
+  # console.log "sky-classifier: head"
   { request } = context
   context.head = if request.method == "head"
     request.method = "get"
@@ -172,7 +172,7 @@ head = Fn.tee ( context ) ->
   else false
 
 method = Fn.tee ( context ) ->
-  console.log "sky-classifier: method"
+  # console.log "sky-classifier: method"
   { request, resource } = context
   if ( method = resource.methods[ request.method ])?
     context.method = method
@@ -183,7 +183,7 @@ method = Fn.tee ( context ) ->
         allow: [ resources.options ]
 
 acceptable = Fn.tee ( context ) ->
-  console.log "sky-classifier: acceptable"
+  # console.log "sky-classifier: acceptable"
   { request, method } = context
   if ( candidates = Sublime.Request.Headers.get request, "accept" )?
     if ( targets = method.response[ "content-type" ] )?
@@ -196,7 +196,7 @@ acceptable = Fn.tee ( context ) ->
       context.accept = candidates
 
 supported = Fn.tee ( context ) ->
-  console.log "sky-classifier: supported"
+  # console.log "sky-classifier: supported"
   { request, method } = context
   if request.content?
     if ( candidates = method.request?[ "content-type" ] )?
@@ -220,7 +220,7 @@ supported = Fn.tee ( context ) ->
 
 accept = do ({ accept } = {}) ->
   ( context ) ->
-    console.log "sky-classifier: accept"
+    # console.log "sky-classifier: accept"
     { accept, response, request } = context
     if response.content? && accept? && ( Sublime.Response.Status.ok response )
       if ( type = Accept.select accept, "text/html" )? && request.resource.name == "description"
@@ -239,7 +239,7 @@ accept = do ({ accept } = {}) ->
             description: "unsupported media type"
 
 valid = Fn.tee ( context ) ->
-  console.log "sky-classifier: valid"
+  # console.log "sky-classifier: valid"
   { request, method } = context
   if request.content?
     if method.request.schema?
@@ -248,7 +248,7 @@ valid = Fn.tee ( context ) ->
           description: "bad request"
 
 consistent = Fn.tee ( context ) ->
-  console.log "sky-classifier: consistent"
+  # console.log "sky-classifier: consistent"
   { request } = context
   if request.content?
     if Type.isObject request.content
@@ -260,7 +260,7 @@ consistent = Fn.tee ( context ) ->
             return
       
 authorization = Fn.tee ( context ) ->
-  console.log "sky-classifier: authorization"
+  # console.log "sky-classifier: authorization"
   { request } = context
   context.request.authorization ?= do ->
     if ( header = Sublime.Request.Headers.get request, "authorization" )?
@@ -274,7 +274,7 @@ authorization = Fn.tee ( context ) ->
     else []
 
 invoke = Fn.curry Fn.rtee ( handler, context ) ->
-  console.log "sky-classifier: invoke"
+  # console.log "sky-classifier: invoke"
   { request } = context
   request.api = context.api
   context.response = await handler request
