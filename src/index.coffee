@@ -6,11 +6,22 @@ import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 import { Accept, MediaType } from "@dashkite/media-type"
 import { Authorization, Link } from "@dashkite/http-headers"
+import { Name } from "@dashkite/name"
 import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 import JSONValidator from "ajv/dist/2020"
 import addFormats from "ajv-formats"
 import { html as descriptionHTML } from "@dashkite/api-documentation-generator"
+
+parseDomain = ( domain ) ->
+  mode = process.env.mode ? "development"
+  [ name, namespace, tld ] = domain.split "."
+  if mode != "production"
+    [ components..., address ] = name.split "-"
+    name = components.join "-"
+  { name, namespace, tld }
+
+env = JSON.parse process.env.context
 
 Normalize =
 
@@ -70,8 +81,6 @@ normalize = Fn.tee Fn.pipe [
 validator = new JSONValidator allowUnionTypes: true
 addFormats validator
 
-lambdas = {}
-
 url = ( domain, target ) ->
   "https://#{ domain }#{ target }"
 
@@ -93,7 +102,9 @@ ping = Fn.tee ( context ) ->
 
 lambda = Fn.tee ( context ) ->
   { request } = context
-  if ( lambda = lambdas[ request.domain ] )?
+  { namespace, name } = parseDomain request.domain
+  uri = Name.getURI { type: "lambda", namespace, name }
+  if ( lambda = env[ uri ] )?
     request.lambda = lambda
   else
     console.warn "sky-classifier: no matching lambda for 
@@ -298,7 +309,6 @@ run = Fn.curry ( processors, context ) ->
     context.response = description: "internal server error"
     
 initialize = Fn.curry ( context, request ) ->
-  lambdas = context.lambdas
   { ( structuredClone context )..., request }
 
 classifier = ( context, handler ) ->
