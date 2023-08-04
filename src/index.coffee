@@ -26,9 +26,17 @@ env = JSON.parse process.env.context
 Normalize =
 
   location: Fn.tee ( response ) ->
+    console.log "Normalize.location"
+    console.log "headers", response.headers
     if ( values = response.headers.location )?
       response.headers.location = values.map ( value ) ->
+        console.log "location", value
+        console.log "is object?", Type.isObject value
         if Type.isObject value
+          console.log "url", API.Resource
+            .from value
+            .encode()
+
           API.Resource
             .from value
             .encode()
