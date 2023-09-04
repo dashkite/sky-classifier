@@ -47,10 +47,10 @@ devDependencies:
     specifier: ^0.1.4
     version: 0.1.4
   '@dashkite/genie':
-    specifier: ^0.5.6
+    specifier: link:../genie
     version: 0.5.11
   '@dashkite/genie-presets':
-    specifier: ^0.7.0
+    specifier: link:../genie-presets
     version: 0.7.0
   '@dashkite/sky-dispatcher':
     specifier: link:../sky-dispatcher
