@@ -40,7 +40,6 @@
     "@dashkite/amen-console": "^0.0.1",
     "@dashkite/assert": "^0.1.4",
     "@dashkite/genie": "link:../genie",
-    "@dashkite/genie-presets": "link:../genie-presets",
     "@dashkite/sky-dispatcher": "link:../sky-dispatcher"
   },
   "dependencies": {
