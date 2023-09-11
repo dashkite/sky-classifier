@@ -40,16 +40,18 @@
     "@dashkite/amen-console": "^0.0.1",
     "@dashkite/assert": "^0.1.4",
     "@dashkite/genie": "link:../genie",
+    "@dashkite/genie-coffee": "link:../genie-coffee",
+    "@dashkite/genie-yaml": "link:../genie-yaml",
     "@dashkite/sky-dispatcher": "link:../sky-dispatcher"
   },
   "dependencies": {
-    "@dashkite/api-documentation-generator": "link:../api-documentation-generator",
     "@dashkite/http-headers": "link:../http-headers",
     "@dashkite/joy": "^0.3.16",
     "@dashkite/maeve": "link:../maeve",
     "@dashkite/media-type": "link:../media-type",
     "@dashkite/name": "link:../name",
     "@dashkite/sky-api-description": "link:../sky-api-description",
+    "@dashkite/sky-doc": "link:../sky-doc",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "panda-confidential": "^3.1.2"

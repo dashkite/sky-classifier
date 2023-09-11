@@ -11,7 +11,7 @@ import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 import JSONValidator from "ajv/dist/2020"
 import addFormats from "ajv-formats"
-import { html as descriptionHTML } from "@dashkite/api-documentation-generator"
+import { html as descriptionHTML } from "@dashkite/sky-doc"
 
 parseDomain = ( domain ) ->
   mode = process.env.mode ? "development"
