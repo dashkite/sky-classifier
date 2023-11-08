@@ -1,62 +1,81 @@
-lockfileVersion: 5.4
+lockfileVersion: '6.0'
 
-specifiers:
-  '@dashkite/amen': ^0.1.2
-  '@dashkite/amen-console': ^0.0.1
-  '@dashkite/assert': ^0.1.4
-  '@dashkite/genie': link:../genie
-  '@dashkite/genie-coffee': link:../genie-coffee
-  '@dashkite/genie-yaml': link:../genie-yaml
-  '@dashkite/http-headers': link:../http-headers
-  '@dashkite/joy': ^0.3.16
-  '@dashkite/maeve': link:../maeve
-  '@dashkite/media-type': link:../media-type
-  '@dashkite/name': link:../name
-  '@dashkite/sky-api-description': link:../sky-api-description
-  '@dashkite/sky-dispatcher': link:../sky-dispatcher
-  '@dashkite/sky-doc': link:../sky-doc
-  ajv: ^8.12.0
-  ajv-formats: ^2.1.1
-  panda-confidential: ^3.1.2
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 dependencies:
-  '@dashkite/http-headers': link:../http-headers
-  '@dashkite/joy': 0.3.16
-  '@dashkite/maeve': link:../maeve
-  '@dashkite/media-type': link:../media-type
-  '@dashkite/name': link:../name
-  '@dashkite/sky-api-description': link:../sky-api-description
-  '@dashkite/sky-doc': link:../sky-doc
-  ajv: 8.12.0
-  ajv-formats: 2.1.1_ajv@8.12.0
-  panda-confidential: 3.1.2
+  '@dashkite/http-headers':
+    specifier: link:../http-headers
+    version: link:../http-headers
+  '@dashkite/joy':
+    specifier: ^0.3.16
+    version: 0.3.16
+  '@dashkite/maeve':
+    specifier: link:../maeve
+    version: link:../maeve
+  '@dashkite/media-type':
+    specifier: link:../media-type
+    version: link:../media-type
+  '@dashkite/name':
+    specifier: link:../name
+    version: link:../name
+  '@dashkite/sky-api-description':
+    specifier: link:../sky-api-description
+    version: link:../sky-api-description
+  '@dashkite/sky-doc':
+    specifier: link:../sky-doc
+    version: link:../sky-doc
+  ajv:
+    specifier: ^8.12.0
+    version: 8.12.0
+  ajv-formats:
+    specifier: ^2.1.1
+    version: 2.1.1(ajv@8.12.0)
+  panda-confidential:
+    specifier: ^3.1.2
+    version: 3.1.2
 
 devDependencies:
-  '@dashkite/amen': 0.1.2
-  '@dashkite/amen-console': 0.0.1
-  '@dashkite/assert': 0.1.4
-  '@dashkite/genie': link:../genie
-  '@dashkite/genie-coffee': link:../genie-coffee
-  '@dashkite/genie-yaml': link:../genie-yaml
-  '@dashkite/sky-dispatcher': link:../sky-dispatcher
+  '@dashkite/amen':
+    specifier: ^0.1.2
+    version: 0.1.2
+  '@dashkite/amen-console':
+    specifier: ^0.0.1
+    version: 0.0.1
+  '@dashkite/assert':
+    specifier: ^0.1.4
+    version: 0.1.4
+  '@dashkite/genie':
+    specifier: link:../genie
+    version: link:../genie
+  '@dashkite/genie-coffee':
+    specifier: link:../genie-coffee
+    version: link:../genie-coffee
+  '@dashkite/genie-yaml':
+    specifier: link:../genie-yaml
+    version: link:../genie-yaml
+  '@dashkite/sky-dispatcher':
+    specifier: link:../sky-dispatcher
+    version: link:../sky-dispatcher
 
 packages:
 
-  /@dashkite/amen-console/0.0.1:
+  /@dashkite/amen-console@0.0.1:
     resolution: {integrity: sha512-ZJ0a1vNxqULnXN5e0vCkHVHnmK8XPaUrzGKF77cpCMqnBmO69D/UwzhAmT0lzHXQJ6zXEdTMfExO9LsQt14FiQ==}
     dev: true
 
-  /@dashkite/amen/0.1.2:
+  /@dashkite/amen@0.1.2:
     resolution: {integrity: sha512-lQwxCo97oKnNrH+mNcF/fTi1WFY+YfOHBD31NDkvcu/R6HOtLQa08agyZBRk5kJrOjHYI8kAdOkjjOWw8LEC5g==}
     dev: true
 
-  /@dashkite/assert/0.1.4:
+  /@dashkite/assert@0.1.4:
     resolution: {integrity: sha512-OLOzI/lA+EwCh6znSexGAG1V4bkaT5gU04xl6ApEluv5jICnHhinZ707MObu+jhVVJ9uHDDlG85O+Afn1aTQoQ==}
     dependencies:
       '@dashkite/joy': 0.3.16
     dev: true
 
-  /@dashkite/bake/0.0.6:
+  /@dashkite/bake@0.0.6:
     resolution: {integrity: sha512-yBD2B4l1+nGa4JZ+CgxmhxDGnZvs+SIB8xl/rheINdmbfe1/tXswcwLsrz8qP5x4/9mDFVOq00vKauUCj0cIJA==}
     dependencies:
       '@dashkite/base64': 1.0.1
@@ -64,22 +83,22 @@ packages:
       '@dashkite/utf8': 1.0.1
     dev: false
 
-  /@dashkite/base64/1.0.1:
+  /@dashkite/base64@1.0.1:
     resolution: {integrity: sha512-7O3HajSgWaie/kme1bcdXQnVsMXn4A5m9YOaxWnEZ8z9LCrnJ8BGnpTgFJUqSC4mv0Z/0NBcwTmeGCoEc9VYoA==}
     dev: false
 
-  /@dashkite/joy/0.3.16:
+  /@dashkite/joy@0.3.16:
     resolution: {integrity: sha512-dsU0us4j1Pb+zceoBvLbnZ2PbmULkJUtM2vtWLxKmoc1DE4w9SVTiPTe6JWvF0A0vk90ldv+Lc9qEA5x3O+DtQ==}
 
-  /@dashkite/tweetnacl/1.0.3:
+  /@dashkite/tweetnacl@1.0.3:
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}
     dev: false
 
-  /@dashkite/utf8/1.0.1:
+  /@dashkite/utf8@1.0.1:
     resolution: {integrity: sha512-58HZrEijYUG9p8SAf4o/NR7U3qUq//9XbkQ7T5cHIY/RFjCVg9vpWZlHXkcbZp7v3CAMJgEGVXt/5/upvOBQAw==}
     dev: false
 
-  /ajv-formats/2.1.1_ajv@8.12.0:
+  /ajv-formats@2.1.1(ajv@8.12.0):
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
     peerDependencies:
       ajv: ^8.0.0
@@ -90,7 +109,7 @@ packages:
       ajv: 8.12.0
     dev: false
 
-  /ajv/8.12.0:
+  /ajv@8.12.0:
     resolution: {integrity: sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==}
     dependencies:
       fast-deep-equal: 3.1.3
@@ -99,15 +118,15 @@ packages:
       uri-js: 4.4.1
     dev: false
 
-  /fast-deep-equal/3.1.3:
+  /fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
     dev: false
 
-  /json-schema-traverse/1.0.0:
+  /json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
     dev: false
 
-  /panda-confidential/3.1.2:
+  /panda-confidential@3.1.2:
     resolution: {integrity: sha512-ERb595LplWijUe8sE5bFUsrl3gvNweqIV9GmpO54Y8jGYRm5/xVCZ/r71OBOVz0nf+jTo4b4A+IDcWbTI5vL5Q==}
     dependencies:
       '@dashkite/bake': 0.0.6
@@ -115,17 +134,17 @@ packages:
       '@dashkite/tweetnacl': 1.0.3
     dev: false
 
-  /punycode/2.3.1:
+  /punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
     dev: false
 
-  /require-from-string/2.0.2:
+  /require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /uri-js/4.4.1:
+  /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
       punycode: 2.3.1
