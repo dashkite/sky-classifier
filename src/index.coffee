@@ -21,8 +21,6 @@ parseDomain = ( domain ) ->
     name = components.join "-"
   { name, namespace, tld }
 
-env = JSON.parse process.env.context
-
 Normalize =
 
   location: Fn.tee ( response ) ->
@@ -109,10 +107,8 @@ ping = Fn.tee ( context ) ->
     context.response = description: "ok"
 
 lambda = Fn.tee ( context ) ->
-  { request } = context
-  { namespace, name } = parseDomain request.domain
-  uri = Name.getURI { type: "lambda", namespace, name }
-  if ( lambda = env[ uri ] )?
+  { domains, request } = context
+  if ( lambda = domains[ request.domain ] )?
     request.lambda = lambda
   else
     console.warn "sky-classifier: no matching lambda for 
