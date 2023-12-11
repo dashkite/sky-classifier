@@ -11,15 +11,15 @@ dependencies:
   '@dashkite/joy':
     specifier: ^0.3.16
     version: 0.3.16
+  '@dashkite/kaiko':
+    specifier: ^0.3.1
+    version: 0.3.1
   '@dashkite/maeve':
     specifier: link:../maeve
     version: link:../maeve
   '@dashkite/media-type':
     specifier: link:../media-type
     version: link:../media-type
-  '@dashkite/name':
-    specifier: link:../name
-    version: link:../name
   '@dashkite/sky-api-description':
     specifier: link:../sky-api-description
     version: link:../sky-api-description
@@ -89,6 +89,10 @@ packages:
 
   /@dashkite/joy@0.3.16:
     resolution: {integrity: sha512-dsU0us4j1Pb+zceoBvLbnZ2PbmULkJUtM2vtWLxKmoc1DE4w9SVTiPTe6JWvF0A0vk90ldv+Lc9qEA5x3O+DtQ==}
+
+  /@dashkite/kaiko@0.3.1:
+    resolution: {integrity: sha512-KuTY4YXS1O3MlMcmDU3oozyxbAsydAEJ4rP+C7UIXBPPBVWuhYQ5tS1htZX37woWfMcq9FLM2eTh/QCkCYEMtg==}
+    dev: false
 
   /@dashkite/tweetnacl@1.0.3:
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}

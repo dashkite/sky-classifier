@@ -1,3 +1,4 @@
+import log from "@dashkite/kaiko"
 import * as Fn from "@dashkite/joy/function"
 import * as Val from "@dashkite/joy/value"
 import * as Text from "@dashkite/joy/text"
@@ -6,7 +7,6 @@ import * as API from "@dashkite/sky-api-description"
 import * as Sublime from "@dashkite/maeve/sublime"
 import { Accept, MediaType } from "@dashkite/media-type"
 import { Authorization, Link } from "@dashkite/http-headers"
-import { Name } from "@dashkite/name"
 import description from "./helpers/description"
 import { JSON64 } from "./helpers/utils"
 import JSONValidator from "ajv/dist/2020"
@@ -117,6 +117,7 @@ lambda = Fn.tee ( context ) ->
 
 describe = Fn.tee ( context ) ->
   # console.log "sky-classifier: describe"
+  # TODO can we avoid hardcoding / as description
   { request } = context
   if request.target == "/" || request.resource?.name == "description"
     context.resource = API.Resource.from { 
@@ -144,6 +145,7 @@ describe = Fn.tee ( context ) ->
 resource = Fn.tee ( context ) ->
   # console.log "sky-classifier: resource"
   { request, api } = context
+  log.debug { context, api }
   if !context.resource?
     if request.resource?
       context.resource = api.resources[ request.resource.name ]
@@ -338,5 +340,25 @@ classifier = ( context, handler ) ->
     Sublime.response
     normalize
   ]
+
+# ping
+#         -> options
+#         -> response
+
+# options
+#         -> lambda
+#         -> response
+
+# lambda
+#         -> response
+#         -> describe
+
+# describe 
+#         !resource? -> resource
+#         -> response
+#         -> head
+
+# resource 
+#         -> 
 
 export { classifier }
