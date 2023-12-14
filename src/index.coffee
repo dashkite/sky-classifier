@@ -229,6 +229,9 @@ supported = Fn.tee ( context ) ->
     category ?= MediaType.infer request.content
     switch category
       when "json"
+        # in case, for some reason *cough* stripe *cough* 
+        # you need the raw JSON
+        request.json = request.content
         request.content = JSON.parse request.content
       # TODO decode binary encodings?
   else if method.request?[ "content-type" ]?
