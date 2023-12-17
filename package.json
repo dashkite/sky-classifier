@@ -39,7 +39,7 @@
     "@dashkite/amen": "^0.1.2",
     "@dashkite/amen-console": "^0.0.1",
     "@dashkite/assert": "^0.1.4",
-    "@dashkite/genie": "link:../genie",
+    "@dashkite/genie": "^0.7.3",
     "@dashkite/genie-coffee": "link:../genie-coffee",
     "@dashkite/genie-yaml": "link:../genie-yaml",
     "@dashkite/sky-dispatcher": "link:../sky-dispatcher"
@@ -47,7 +47,7 @@
   "dependencies": {
     "@dashkite/http-headers": "link:../http-headers",
     "@dashkite/joy": "^0.3.16",
-    "@dashkite/kaiko": "^0.3.1",
+    "@dashkite/kaiko": "link:../kaiko",
     "@dashkite/maeve": "link:../maeve",
     "@dashkite/media-type": "link:../media-type",
     "@dashkite/sky-api-description": "link:../sky-api-description",

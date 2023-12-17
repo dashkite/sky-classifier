@@ -145,7 +145,6 @@ describe = Fn.tee ( context ) ->
 resource = Fn.tee ( context ) ->
   # console.log "sky-classifier: resource"
   { request, api } = context
-  log.debug { context, api }
   if !context.resource?
     if request.resource?
       context.resource = api.resources[ request.resource.name ]
