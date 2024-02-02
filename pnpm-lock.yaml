@@ -20,7 +20,7 @@ dependencies:
   '@dashkite/media-type':
     specifier: link:../media-type
     version: link:../media-type
-  '@dashkite/sky-api-description':
+  '@dashkite/scout':
     specifier: link:../sky-api-description
     version: link:../sky-api-description
   '@dashkite/sky-doc':
