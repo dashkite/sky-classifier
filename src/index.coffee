@@ -1,5 +1,6 @@
 import log from "@dashkite/kaiko"
 import * as Fn from "@dashkite/joy/function"
+import * as Obj from "@dashkite/joy/object"
 import * as Val from "@dashkite/joy/value"
 import * as Text from "@dashkite/joy/text"
 import * as Type from "@dashkite/joy/type"
@@ -24,30 +25,29 @@ parseDomain = ( domain ) ->
 Normalize =
 
   location: Fn.tee ( response ) ->
-    console.log "Normalize.location"
-    console.log "headers", response.headers
     if ( values = response.headers.location )?
       response.headers.location = values.map ( value ) ->
-        console.log "location", value
-        console.log "is object?", Type.isObject value
         if Type.isObject value
-          console.log "url", API.Resource
-            .from value
-            .encode()
-
-          API.Resource
-            .from value
-            .encode()
+          throw new Error "sky-classifier: specifying a resource
+            description as a location header is currently unsupported"
+          # get URL from resource description...
+          # TODO we need the request lambda to get the URL this way
+          # api = await API.discover {
+          #   lambda: request.lambda, 
+          #   resource 
+          # }
+          # TODO add API.url to Scout
+          # API.url value, api
         else value
       
   link: Fn.tee ( response ) ->
     if ( values = response.headers.link )?
       response.headers.link = values.map ( value ) ->
         if Type.isObject value
-          { url, resource, parameters } = value
-          url ?= API.Resource
-            .from resource
-            .encode()
+          throw new Error "sky-classifier: specifying a resource
+            description as a link header is currently unsupported"
+          # TODO generate URL from resource description
+          # need request.lambda; see Normalize.location above
           Link.format { url, parameters }
         else value
 
@@ -120,25 +120,13 @@ describe = Fn.tee ( context ) ->
   # TODO can we avoid hardcoding / as description
   { request } = context
   if request.target == "/" || request.resource?.name == "description"
-    context.resource = API.Resource.from { 
-      name: "description"
-      resource: description
-    }
+    context.resource = description
     request.target ?= "/"
     request.url ?= url request.domain, request.target
     request.resource ?= { name: "description" }
   else
-    # console.log "sky-classifier: attempting discovery for", request
-    response = await Sky.fetch {
-      domain: request.domain
-      lambda: request.lambda
-      resource: { name: "description" }
-      method: "get"
-      headers: accept: [ "application/json" ]
-    }
-    if response.description == "ok"
-      # console.log "sky-classifier: adding description to context"
-      context.api = API.Description.from JSON.parse response.content
+    if ( api = await API.discover request )?
+      context.api = api
     else
       context.response = description: "not found"
 
@@ -147,15 +135,15 @@ resource = Fn.tee ( context ) ->
   { request, api } = context
   if !context.resource?
     if request.resource?
-      context.resource = api.resources[ request.resource.name ]
+      context.resource = API.resource request.resource.name, api
       # add target and url if we don't already have one
-      request.target ?= context.resource.encode request.resource.bindings
+      request.target ?= API.encode request, api
       request.url ?= url request.domain, request.target
-    else if ( resource = api.decode request )?
+    else if ( resource = API.decode request, api )?
       request.resource = resource
-      context.resource = api.resources[ resource.name ]
+      context.resource = API.resource resource.name, api
       # add target and url if we don't already have one
-      request.target ?= context.resource.encode request.resource.bindings
+      request.target ?= API.encode request, api
       request.url ?= url request.domain, request.target
     else
       context.response = description: "not found"
@@ -190,13 +178,13 @@ head = Fn.tee ( context ) ->
 method = Fn.tee ( context ) ->
   # console.log "sky-classifier: method"
   { request, resource } = context
-  if ( method = resource.methods[ request.method ])?
+  if ( method = API.method request.method, resource )?
     context.method = method
   else
     context.response =
       description: "method not allowed"
       headers:
-        allow: [ resources.options ]
+        allow: (( API.methods resource ).map Obj.get "name" )
 
 acceptable = Fn.tee ( context ) ->
   # console.log "sky-classifier: acceptable"
@@ -225,6 +213,7 @@ supported = Fn.tee ( context ) ->
       else # malformed request, no content-type
         context.response =
           description: "bad request"
+        return
     category ?= MediaType.infer request.content
     switch category
       when "json"
