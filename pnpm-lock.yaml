@@ -21,8 +21,8 @@ dependencies:
     specifier: link:../media-type
     version: link:../media-type
   '@dashkite/scout':
-    specifier: link:../sky-api-description
-    version: link:../sky-api-description
+    specifier: link:../scout
+    version: link:../scout
   '@dashkite/sky-doc':
     specifier: link:../sky-doc
     version: link:../sky-doc
