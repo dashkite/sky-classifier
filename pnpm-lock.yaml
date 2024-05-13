@@ -12,8 +12,8 @@ dependencies:
     specifier: ^0.3.16
     version: 0.3.16
   '@dashkite/kaiko':
-    specifier: link:../kaiko
-    version: link:../kaiko
+    specifier: ^0.3.3
+    version: 0.3.3
   '@dashkite/maeve':
     specifier: link:../maeve
     version: link:../maeve
@@ -114,7 +114,6 @@ packages:
 
   /@dashkite/kaiko@0.3.3:
     resolution: {integrity: sha512-XnAvVr9y2MsDqMLr4A24vkLF7Iuq3E8RjHEEpqhe29P5NevVX9jXKcXUStNMp9MSJbjHd2pqUNiM5Vvdja9ggg==}
-    dev: true
 
   /@dashkite/tweetnacl@1.0.3:
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}
