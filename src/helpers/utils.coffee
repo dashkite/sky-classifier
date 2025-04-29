@@ -2,7 +2,6 @@ import { confidential } from "panda-confidential"
 
 Confidential = confidential()
 
-# TODO add to bake
 JSON64 =
 
   nonce: ->

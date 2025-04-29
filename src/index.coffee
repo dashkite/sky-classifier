@@ -31,13 +31,6 @@ Normalize =
           throw new Error "sky-classifier: specifying a resource
             description as a location header is currently unsupported"
           # get URL from resource description...
-          # TODO we need the request lambda to get the URL this way
-          # api = await API.discover {
-          #   lambda: request.lambda, 
-          #   resource 
-          # }
-          # TODO add API.url to Scout
-          # API.url value, api
         else value
       
   link: Fn.tee ( response ) ->
@@ -46,8 +39,6 @@ Normalize =
         if Type.isObject value
           throw new Error "sky-classifier: specifying a resource
             description as a link header is currently unsupported"
-          # TODO generate URL from resource description
-          # need request.lambda; see Normalize.location above
           Link.format { url, parameters }
         else value
 
@@ -100,7 +91,6 @@ checkStack = ( context, stack ) ->
   { request } = context
   !( stack.find matchRequest request )?
 
-# TODO may want to check for empty host header?
 ping = Fn.tee ( context ) ->
   { request } = context
   if request.target == "/ping"
@@ -117,7 +107,6 @@ lambda = Fn.tee ( context ) ->
 
 describe = Fn.tee ( context ) ->
   # console.log "sky-classifier: describe"
-  # TODO can we avoid hardcoding / as description
   { request } = context
   if request.target == "/" || request.resource?.name == "description"
     context.resource = description
@@ -153,10 +142,6 @@ options = Fn.tee ( context ) ->
   { request, resource } = context
   if request.method == "options"
     # console.log "OPTIONS REQUEST", request
-    # TODO do we need to avoid sending the CORS header
-    #      if it isn't a CORS request?
-    # TODO we should be basing the headers on the
-    # api description
     context.response =
       description: "no content"
       headers:
@@ -221,7 +206,6 @@ supported = Fn.tee ( context ) ->
         # you need the raw JSON
         request.json = request.content
         request.content = JSON.parse request.content
-      # TODO decode binary encodings?
   else if method.request?[ "content-type" ]?
     context.response =
       description: "bad request"
@@ -241,7 +225,6 @@ accept = do ({ accept } = {}) ->
           switch MediaType.category type
             when "json" 
               response.content = JSON.stringify response.content
-            # TODO possibly attempt to encode binary formats
         else
           context.response =
             description: "unsupported media type"
