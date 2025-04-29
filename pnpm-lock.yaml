@@ -63,6 +63,9 @@ importers:
       '@dashkite/sky-dispatcher':
         specifier: link:../sky-dispatcher
         version: link:../sky-dispatcher
+      '@dashkite/vista':
+        specifier: link:../vista
+        version: link:../vista
 
 packages:
 
