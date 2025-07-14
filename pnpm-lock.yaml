@@ -58,8 +58,8 @@ importers:
         specifier: 0.2.0
         version: 0.2.0
       '@dashkite/genie-release':
-        specifier: ^0.2.8
-        version: 0.2.8
+        specifier: ^0.2.9
+        version: 0.2.9
       '@dashkite/genie-yaml':
         specifier: 0.1.0
         version: 0.1.0
@@ -637,8 +637,8 @@ packages:
   '@dashkite/genie-coffee@0.2.0':
     resolution: {integrity: sha512-mZBmTYbCkjHUSNGDg6aeGn5aOCJwYJlfh3+NjsycE+q4WBzZHa8tWwODlNQdnRxUT9j3yhvW7aTVWf2xI14DGw==}
 
-  '@dashkite/genie-release@0.2.8':
-    resolution: {integrity: sha512-nIlx8ocQWIrJAHbYiFopnCL7LWr/4r4lexomeYrR+eadDc2IVbzRH+bnMj2dyNBzCNw18Tk5rt60mUg96ieiQg==}
+  '@dashkite/genie-release@0.2.9':
+    resolution: {integrity: sha512-19tTp419unkzcXsAB1/z7TsqPKQpQB0p7tyYvpyXw51nz+EYxRpo2l+dv2sKsmIH1d3ovu7UFehhW8lJUlZ5CQ==}
 
   '@dashkite/genie-yaml@0.1.0':
     resolution: {integrity: sha512-NDvqIDiDslWWhe1DIxCm9CGl+1nc0x/EligQHZv3Izdg/rV21M/KUaSyChPf2z6h96eDLfJa9kinZhrxlzO3fA==}
@@ -2258,7 +2258,7 @@ snapshots:
       - '@swc/helpers'
       - supports-color
 
-  '@dashkite/genie-release@0.2.8':
+  '@dashkite/genie-release@0.2.9':
     dependencies:
       '@dashkite/zephyr': 0.2.0
       zx: 8.6.1
