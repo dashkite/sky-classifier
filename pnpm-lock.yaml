@@ -64,8 +64,8 @@ importers:
         specifier: 0.1.0
         version: 0.1.0
       '@dashkite/sky-dispatcher':
-        specifier: link:../sky-dispatcher
-        version: link:../sky-dispatcher
+        specifier: 0.1.0
+        version: 0.1.0
 
 packages:
 
@@ -701,6 +701,9 @@ packages:
 
   '@dashkite/scout@0.2.0':
     resolution: {integrity: sha512-7L1YLjr/alcq1lvPTll+7Sc0Ek4H5gBIyUWpuGuIWqRDvHECgBrOhUDfFizjIFRAGFRVItdlpLHz6BOFKGC0KQ==}
+
+  '@dashkite/sky-dispatcher@0.1.0':
+    resolution: {integrity: sha512-z6rq67eKwbJQKNCeM02BCl5oO2TpZmiE2UPukej8Lvk5ib2uix4L4y06FpJreIerpsI223ytP9HwvH9/onOmtw==}
 
   '@dashkite/tweetnacl@1.0.3':
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}
@@ -2379,6 +2382,11 @@ snapshots:
     dependencies:
       '@dashkite/joy': 0.3.16
       '@dashkite/url-codex': 0.2.0
+
+  '@dashkite/sky-dispatcher@0.1.0':
+    dependencies:
+      '@dashkite/kaiko': 0.3.3
+      '@dashkite/scout': 0.2.0
 
   '@dashkite/tweetnacl@1.0.3': {}
 
