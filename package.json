@@ -48,12 +48,12 @@
     "@dashkite/sky-dispatcher": "link:../sky-dispatcher"
   },
   "dependencies": {
-    "@dashkite/http-headers": "link:../http-headers",
+    "@dashkite/http-headers": "0.6.0",
     "@dashkite/joy": "^0.3.16",
     "@dashkite/kaiko": "^0.3.3",
     "@dashkite/maeve": "0.1.0",
     "@dashkite/media-type": "0.2.0",
-    "@dashkite/scout": "link:../scout",
+    "@dashkite/scout": "0.2.0",
     "@dashkite/sky-doc": "link:../sky-doc",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
