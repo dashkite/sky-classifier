@@ -21,8 +21,8 @@ importers:
         specifier: link:../maeve
         version: link:../maeve
       '@dashkite/media-type':
-        specifier: link:../media-type
-        version: link:../media-type
+        specifier: 0.2.0
+        version: 0.2.0
       '@dashkite/scout':
         specifier: link:../scout
         version: link:../scout
@@ -677,6 +677,12 @@ packages:
 
   '@dashkite/masonry@0.14.0':
     resolution: {integrity: sha512-5POHf/fpqgFba4Xbrr8oNHIpkKTD1WgFTZMjBZBvluv8YBWzLayAd9l4R0TYy+MybBVFFJ2Tj7v5DlIu6dPgvw==}
+
+  '@dashkite/media-type@0.2.0':
+    resolution: {integrity: sha512-XEvcDeqFeiX6zKhs8jIc4+97xkOdOfssN+kYn5nnoRoXP4WEI+Em3frdkGtl71oltgh27Y377bImWw5ExK/juw==}
+
+  '@dashkite/parse@0.4.3':
+    resolution: {integrity: sha512-bE0kBjaGYjUnCzWJelQnx8vsfJ9YP07aRTVFZoY7TZWvMmnihoCSugL4IVWAOA2O0EAZXjT8FcjA4bNJ/BQwwg==}
 
   '@dashkite/tweetnacl@1.0.3':
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}
@@ -2290,6 +2296,15 @@ snapshots:
       fast-glob: 3.3.3
     transitivePeerDependencies:
       - supports-color
+
+  '@dashkite/media-type@0.2.0':
+    dependencies:
+      '@dashkite/joy': 0.3.16
+      '@dashkite/parse': 0.4.3
+
+  '@dashkite/parse@0.4.3':
+    dependencies:
+      '@dashkite/joy': 0.3.16
 
   '@dashkite/tweetnacl@1.0.3': {}
 
