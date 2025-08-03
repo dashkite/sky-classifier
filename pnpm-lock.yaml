@@ -27,8 +27,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       '@dashkite/sky-doc':
-        specifier: ^0.1.5
-        version: 0.1.5
+        specifier: ^0.1.6
+        version: 0.1.6
       ajv:
         specifier: ^8.17.1
         version: 8.17.1
@@ -723,8 +723,8 @@ packages:
   '@dashkite/sky-dispatcher@0.4.0':
     resolution: {integrity: sha512-wifJOsxbEbnXJDEA7rQZseeP3bCjyg86nnk59tkjFmA+7juLlkclPB5w0SY63fovo+jHwu3sY2ghWdALhlzITA==}
 
-  '@dashkite/sky-doc@0.1.5':
-    resolution: {integrity: sha512-v30Jt19PfCp0MtchlmNIvIvHkAE/s6sAukHy3RS/NL8h+MoRUCwb1JgifLM1+ilaoiKm0h0nfxn0NRc9z574fA==}
+  '@dashkite/sky-doc@0.1.6':
+    resolution: {integrity: sha512-/x1EaJmykrW40AaikUPdTPH2uCcEpMJ7tH/jxPtJLAqL1gvxg6kwk72dAN1GVJ5+Ckvsl4PPHo+9D3qrRvOx9g==}
 
   '@dashkite/tweetnacl@1.0.3':
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}
@@ -2460,7 +2460,7 @@ snapshots:
       '@dashkite/kaiko': 0.3.3
       '@dashkite/scout': 0.2.0
 
-  '@dashkite/sky-doc@0.1.5':
+  '@dashkite/sky-doc@0.1.6':
     dependencies:
       '@dashkite/beryl': 0.1.5
       '@dashkite/joy': 0.3.16
