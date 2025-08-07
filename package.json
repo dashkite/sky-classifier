@@ -54,7 +54,7 @@
     "@dashkite/maeve": "^0.4.0",
     "@dashkite/media-type": "^0.4.0",
     "@dashkite/scout": "^0.4.0",
-    "@dashkite/sky-doc": "^0.1.15",
+    "@dashkite/sky-doc": "^0.1.16",
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1",
     "panda-confidential": "^3.1.2"
