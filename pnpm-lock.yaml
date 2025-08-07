@@ -27,8 +27,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       '@dashkite/sky-doc':
-        specifier: ^0.1.11
-        version: 0.1.11
+        specifier: ^0.1.12
+        version: 0.1.12
       ajv:
         specifier: ^8.17.1
         version: 8.17.1
@@ -634,8 +634,8 @@ packages:
   '@dashkite/base64@1.0.1':
     resolution: {integrity: sha512-7O3HajSgWaie/kme1bcdXQnVsMXn4A5m9YOaxWnEZ8z9LCrnJ8BGnpTgFJUqSC4mv0Z/0NBcwTmeGCoEc9VYoA==}
 
-  '@dashkite/beryl@0.1.9':
-    resolution: {integrity: sha512-5OoR/KQaYGMOYqMTyK8e5imY1zu2xrz6TCw4UvbbEC5lUs2ev8RxPU6Usj/uxVA6jXD8P9KVjOpPuJJ9s196kw==}
+  '@dashkite/beryl@0.1.10':
+    resolution: {integrity: sha512-I4wLc9lzIv8/gmWZyzC8JUjZ4mLyw4gZAm9tl5GtHWxY1OnNFDgtxw8+SIcENDkMGaodhQrTBIkYEC/e03ByIg==}
 
   '@dashkite/genie-clean@0.9.0':
     resolution: {integrity: sha512-cR5IaFycabxIOH0XrExG5DCrm91milsdPqt104+AcIFEtpthwQ55lgOkS660tC8l7SxnwZzMZbZxHP3oK0iT0A==}
@@ -723,8 +723,8 @@ packages:
   '@dashkite/sky-dispatcher@0.4.0':
     resolution: {integrity: sha512-wifJOsxbEbnXJDEA7rQZseeP3bCjyg86nnk59tkjFmA+7juLlkclPB5w0SY63fovo+jHwu3sY2ghWdALhlzITA==}
 
-  '@dashkite/sky-doc@0.1.11':
-    resolution: {integrity: sha512-KbjzJNDTIM/NjicKDwplDwW3Wj8aqQEdAqH7qAp93pSSN1I2nKUFl9NH5enAxizXjIpT3epXpWKHe7vUluU8qQ==}
+  '@dashkite/sky-doc@0.1.12':
+    resolution: {integrity: sha512-cXQIqv66PKGPC5Yx/yGXo8AgsWms07T44GGAogDukBIaV9a2rtJLpHvVZRiIDVSc2K4va7iFCdNXimuFhTwDJg==}
 
   '@dashkite/tweetnacl@1.0.3':
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}
@@ -2294,7 +2294,7 @@ snapshots:
 
   '@dashkite/base64@1.0.1': {}
 
-  '@dashkite/beryl@0.1.9':
+  '@dashkite/beryl@0.1.10':
     dependencies:
       '@apidevtools/json-schema-ref-parser': 9.1.2
       '@dashkite/joy': 0.3.16
@@ -2460,9 +2460,9 @@ snapshots:
       '@dashkite/kaiko': 0.3.3
       '@dashkite/scout': 0.2.0
 
-  '@dashkite/sky-doc@0.1.11':
+  '@dashkite/sky-doc@0.1.12':
     dependencies:
-      '@dashkite/beryl': 0.1.9
+      '@dashkite/beryl': 0.1.10
       '@dashkite/joy': 0.3.16
 
   '@dashkite/tweetnacl@1.0.3': {}
