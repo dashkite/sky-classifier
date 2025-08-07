@@ -27,8 +27,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       '@dashkite/sky-doc':
-        specifier: ^0.1.10
-        version: 0.1.10
+        specifier: ^0.1.11
+        version: 0.1.11
       ajv:
         specifier: ^8.17.1
         version: 8.17.1
@@ -49,8 +49,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       '@dashkite/genie':
-        specifier: ^0.20.10
-        version: 0.20.10
+        specifier: ^0.20.11
+        version: 0.20.11
       '@dashkite/genie-clean':
         specifier: ^0.9.0
         version: 0.9.0
@@ -634,8 +634,8 @@ packages:
   '@dashkite/base64@1.0.1':
     resolution: {integrity: sha512-7O3HajSgWaie/kme1bcdXQnVsMXn4A5m9YOaxWnEZ8z9LCrnJ8BGnpTgFJUqSC4mv0Z/0NBcwTmeGCoEc9VYoA==}
 
-  '@dashkite/beryl@0.1.8':
-    resolution: {integrity: sha512-yGnKEGg7jQNDeBbf3tjXJVuaL3e1Q6a+Oz/PAs3FKmOI2kSnweMpo9UEPTJmI2NjHNzXS8W5Z1mnuFJRwDX7/g==}
+  '@dashkite/beryl@0.1.9':
+    resolution: {integrity: sha512-5OoR/KQaYGMOYqMTyK8e5imY1zu2xrz6TCw4UvbbEC5lUs2ev8RxPU6Usj/uxVA6jXD8P9KVjOpPuJJ9s196kw==}
 
   '@dashkite/genie-clean@0.9.0':
     resolution: {integrity: sha512-cR5IaFycabxIOH0XrExG5DCrm91milsdPqt104+AcIFEtpthwQ55lgOkS660tC8l7SxnwZzMZbZxHP3oK0iT0A==}
@@ -649,8 +649,8 @@ packages:
   '@dashkite/genie-yaml@0.7.0':
     resolution: {integrity: sha512-XpliyPq/hF9BXMxBbD2wKCsNEI4ViLIzfRam2dS7lsoX4LR2fM5xPrZ/0RFdh3Tar1pugnEdbSZTDGfn3LPDwA==}
 
-  '@dashkite/genie@0.20.10':
-    resolution: {integrity: sha512-Ir9aw5anu9t2F0tlIfmauT1ofKzU2kGpxVfc4bnW9t+Uz7SrIrC4sauX+r/2PzrkXk/gRAhuKT7VKTz+SlYcqw==}
+  '@dashkite/genie@0.20.11':
+    resolution: {integrity: sha512-IVZs3Kiso/BmiDr5wHza8aeAjWvGfbxXxdmn4sV6iQrpo/Bsv3A/1Gbcblc7fhXzvwtTtG2x0ASlvpcSVyz3Pw==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
@@ -723,8 +723,8 @@ packages:
   '@dashkite/sky-dispatcher@0.4.0':
     resolution: {integrity: sha512-wifJOsxbEbnXJDEA7rQZseeP3bCjyg86nnk59tkjFmA+7juLlkclPB5w0SY63fovo+jHwu3sY2ghWdALhlzITA==}
 
-  '@dashkite/sky-doc@0.1.10':
-    resolution: {integrity: sha512-o7BVspsQEwqkg4+B7f4kekwbUdVeeR61JnB87CUL4FdN//mCmqyNG6lXiIkHRQyzS8O1GwmaNiRXyNdv8cTybA==}
+  '@dashkite/sky-doc@0.1.11':
+    resolution: {integrity: sha512-KbjzJNDTIM/NjicKDwplDwW3Wj8aqQEdAqH7qAp93pSSN1I2nKUFl9NH5enAxizXjIpT3epXpWKHe7vUluU8qQ==}
 
   '@dashkite/tweetnacl@1.0.3':
     resolution: {integrity: sha512-qBw5yhOw8mCe7fV6sw/5DIfQLW3txB+MlSDngf7h2WwnRz5CWzmhVBnKuYHcMXX9u50T4iW0AR/FwEl6Tm/TMQ==}
@@ -2294,7 +2294,7 @@ snapshots:
 
   '@dashkite/base64@1.0.1': {}
 
-  '@dashkite/beryl@0.1.8':
+  '@dashkite/beryl@0.1.9':
     dependencies:
       '@apidevtools/json-schema-ref-parser': 9.1.2
       '@dashkite/joy': 0.3.16
@@ -2331,7 +2331,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@dashkite/genie@0.20.10':
+  '@dashkite/genie@0.20.11':
     dependencies:
       '@dashkite/joy': 0.7.0
       '@dashkite/kaiko': 0.3.3
@@ -2460,9 +2460,9 @@ snapshots:
       '@dashkite/kaiko': 0.3.3
       '@dashkite/scout': 0.2.0
 
-  '@dashkite/sky-doc@0.1.10':
+  '@dashkite/sky-doc@0.1.11':
     dependencies:
-      '@dashkite/beryl': 0.1.8
+      '@dashkite/beryl': 0.1.9
       '@dashkite/joy': 0.3.16
 
   '@dashkite/tweetnacl@1.0.3': {}
