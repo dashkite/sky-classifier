@@ -1,6 +1,6 @@
 {
   "name": "@dashkite/sky-classifier",
-  "version": "0.1.42",
+  "version": "0.1.43",
   "description": "Request classifier for Sky APIs",
   "exports": {
     ".": {
