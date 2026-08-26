@@ -26,21 +26,27 @@ Normalize =
 
   location: Fn.tee ( response ) ->
     if ( values = response.headers.location )?
-      response.headers.location = values.map ( value ) ->
+      mapFn = ( value ) ->
         if Type.isObject value
           throw new Error "sky-classifier: specifying a resource
             description as a location header is currently unsupported"
-          # get URL from resource description...
         else value
+      response.headers.location = if Array.isArray values
+        values.map mapFn
+      else
+        mapFn values
       
   link: Fn.tee ( response ) ->
     if ( values = response.headers.link )?
-      response.headers.link = values.map ( value ) ->
+      mapFn = ( value ) ->
         if Type.isObject value
           throw new Error "sky-classifier: specifying a resource
             description as a link header is currently unsupported"
-          Link.format { url, parameters }
         else value
+      response.headers.link = if Array.isArray values
+        values.map mapFn
+      else
+        mapFn values
 
   date: Fn.tee ( response ) ->
     if ( values = response.headers.data )?

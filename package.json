@@ -51,7 +51,7 @@
     "@dashkite/http-headers": "link:../http-headers",
     "@dashkite/joy": "^0.7.0",
     "@dashkite/kaiko": "^0.3.3",
-    "@dashkite/maeve": "^0.4.0",
+    "@dashkite/maeve": "link:../maeve",
     "@dashkite/media-type": "^0.4.0",
     "@dashkite/scout": "link:../scout",
     "@dashkite/sky-doc": "link:../sky-doc",
